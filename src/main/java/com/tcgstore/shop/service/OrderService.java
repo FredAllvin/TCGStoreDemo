@@ -30,43 +30,48 @@ public class OrderService {
 	/** Idempotent: marking an already-paid order paid again is a no-op. */
 	@Transactional
 	public void markPaid(Order order, String paymentRef) {
-		if (order.getStatus() != OrderStatus.PENDING) {
+		Order managed = orders.findById(order.getId()).orElseThrow();
+		if (managed.getStatus() != OrderStatus.PENDING) {
 			return;
 		}
-		order.setStatus(OrderStatus.PAID);
-		order.setPaidAt(Instant.now());
+		managed.setStatus(OrderStatus.PAID);
+		managed.setPaidAt(Instant.now());
 		if (paymentRef != null) {
-			order.setPaymentRef(paymentRef);
+			managed.setPaymentRef(paymentRef);
 		}
-		orders.save(order);
-		log.info("Order {} marked PAID ({})", order.getOrderNumber(), paymentRef);
+		orders.save(managed);
+		log.info("Order {} marked PAID ({})", managed.getOrderNumber(), paymentRef);
 	}
 
 	@Transactional
 	public void markShipped(Order order) {
-		if (order.getStatus() != OrderStatus.PAID) {
+		Order managed = orders.findById(order.getId()).orElseThrow();
+		if (managed.getStatus() != OrderStatus.PAID) {
 			return;
 		}
-		order.setStatus(OrderStatus.SHIPPED);
-		order.setShippedAt(Instant.now());
-		orders.save(order);
+		managed.setStatus(OrderStatus.SHIPPED);
+		managed.setShippedAt(Instant.now());
+		orders.save(managed);
 	}
 
 	/** Cancels and puts the reserved items back in stock. */
 	@Transactional
 	public void cancel(Order order) {
-		if (order.getStatus() == OrderStatus.CANCELLED || order.getStatus() == OrderStatus.SHIPPED) {
+		// re-load inside this transaction so the lazy lines collection is readable
+		// no matter where the caller got the order instance from
+		Order managed = orders.findById(order.getId()).orElseThrow();
+		if (managed.getStatus() == OrderStatus.CANCELLED || managed.getStatus() == OrderStatus.SHIPPED) {
 			return;
 		}
-		for (OrderLine line : order.getLines()) {
+		for (OrderLine line : managed.getLines()) {
 			if (line.getVariantId() != null) {
 				variants.releaseStock(line.getVariantId(), line.getQty());
 			}
 		}
-		order.setStatus(OrderStatus.CANCELLED);
-		order.setCancelledAt(Instant.now());
-		orders.save(order);
-		log.info("Order {} cancelled, stock released", order.getOrderNumber());
+		managed.setStatus(OrderStatus.CANCELLED);
+		managed.setCancelledAt(Instant.now());
+		orders.save(managed);
+		log.info("Order {} cancelled, stock released", managed.getOrderNumber());
 	}
 
 	/** Frees stock held by checkouts that never completed payment. */

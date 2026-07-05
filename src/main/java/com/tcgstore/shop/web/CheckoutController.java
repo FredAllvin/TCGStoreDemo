@@ -7,9 +7,12 @@ import com.tcgstore.shop.service.CartService;
 import com.tcgstore.shop.service.CartService.CartView;
 import com.tcgstore.shop.service.CheckoutService;
 import com.tcgstore.shop.service.OutOfStockException;
+import com.tcgstore.shop.service.payment.PaymentException;
 import com.tcgstore.shop.service.payment.PaymentService;
 import com.tcgstore.shop.web.dto.CheckoutForm;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,6 +27,8 @@ import java.util.Map;
 
 @Controller
 public class CheckoutController {
+
+	private static final Logger log = LoggerFactory.getLogger(CheckoutController.class);
 
 	private final CartService cartService;
 	private final CheckoutService checkoutService;
@@ -62,9 +67,9 @@ public class CheckoutController {
 			addCheckoutModel(model, cart);
 			return "shop/checkout";
 		}
+		Order order;
 		try {
-			Order order = checkoutService.placeOrder(form, paymentService.active().name());
-			return "redirect:" + paymentService.active().startPayment(order);
+			order = checkoutService.placeOrder(form, paymentService.active().name());
 		}
 		catch (OutOfStockException e) {
 			redirect.addFlashAttribute("flashErrorKey", "checkout.outOfStock");
@@ -74,6 +79,16 @@ public class CheckoutController {
 			binding.rejectValue("shippingOptionId", "invalid");
 			addCheckoutModel(model, cart);
 			return "shop/checkout";
+		}
+		try {
+			return "redirect:" + paymentService.active().startPayment(order);
+		}
+		catch (PaymentException e) {
+			// order exists but payment never started; the release job frees
+			// the stock if the customer does not retry
+			log.error("Payment start failed for {}: {}", order.getOrderNumber(), e.getMessage());
+			redirect.addFlashAttribute("flashErrorKey", "checkout.paymentFailed");
+			return "redirect:/order/" + order.getOrderNumber() + "?t=" + order.getAccessToken();
 		}
 	}
 

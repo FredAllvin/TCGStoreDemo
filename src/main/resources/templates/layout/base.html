@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)" lang="sv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:replace="${title}">Kortbutiken</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <style th:inline="text">
+        :root {
+            --brand: [[${settings.primaryColor}]];
+            --accent: [[${settings.accentColor}]];
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:if="${demoMode}" class="demo-ribbon text-center py-1 small fw-semibold" th:text="#{demo.ribbon}">
+    Demobutik – beställningar är inte riktiga
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark brand-bg sticky-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" th:href="@{/}">
+            <img th:if="${settings.logoPath != null}" th:src="@{'/uploads/' + ${settings.logoPath}}" alt="" height="34">
+            <span th:text="${settings.storeName}">Kortbutiken</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item" th:each="cat : ${navCategories}">
+                    <a class="nav-link" th:href="@{'/c/' + ${cat.slug}}" th:text="${cat.name}">Pokémon</a>
+                </li>
+            </ul>
+            <form class="d-flex me-lg-3 my-2 my-lg-0" th:action="@{/search}" method="get" role="search">
+                <input class="form-control form-control-sm" type="search" name="q"
+                       th:placeholder="#{nav.search}" required minlength="2" maxlength="100">
+            </form>
+            <div class="d-flex align-items-center gap-3">
+                <a class="nav-link text-white px-0" th:href="@{/cart}">
+                    <span th:text="#{nav.cart}">Varukorg</span>
+                    <span th:if="${cartCount > 0}" class="badge rounded-pill accent-bg ms-1" th:text="${cartCount}">2</span>
+                </a>
+                <div class="small text-nowrap">
+                    <a class="lang-link" th:href="@{${currentPath}(lang='sv')}">SV</a>
+                    <span class="text-white-50">/</span>
+                    <a class="lang-link" th:href="@{${currentPath}(lang='en')}">EN</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main th:replace="${content}">Innehåll</main>
+
+<footer class="brand-bg py-4 mt-auto">
+    <div class="container d-flex flex-wrap justify-content-between gap-3 small text-white-50">
+        <div>
+            <div class="fw-bold text-white" th:text="${settings.storeName}">Kortbutiken</div>
+            <div th:if="${settings.addressLine != null}" th:text="${settings.addressLine}">Adress 1</div>
+            <div th:if="${settings.contactEmail != null}">
+                <a class="footer-link" th:href="'mailto:' + ${settings.contactEmail}" th:text="${settings.contactEmail}">mail</a>
+            </div>
+            <div th:if="${settings.contactPhone != null}" th:text="${settings.contactPhone}">070-000 00 00</div>
+        </div>
+        <div class="d-flex gap-3 align-items-center">
+            <a th:if="${settings.instagramUrl != null}" class="footer-link" th:href="${settings.instagramUrl}"
+               target="_blank" rel="noopener">Instagram</a>
+            <a th:if="${settings.facebookUrl != null}" class="footer-link" th:href="${settings.facebookUrl}"
+               target="_blank" rel="noopener">Facebook</a>
+            <a th:if="${settings.discordUrl != null}" class="footer-link" th:href="${settings.discordUrl}"
+               target="_blank" rel="noopener">Discord</a>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

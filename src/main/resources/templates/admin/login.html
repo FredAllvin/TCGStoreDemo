@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="#{admin.login.title}">Logga in</title>
+</head>
+<body>
+<main class="container py-5 flex-grow-1" style="max-width: 420px;">
+    <h1 class="h3 mb-4 text-center" th:text="#{admin.login.title}">Logga in</h1>
+
+    <div th:if="${param.error != null}" class="alert alert-danger" th:text="#{admin.login.error}">
+        Fel användarnamn eller lösenord.
+    </div>
+
+    <div th:if="${demoMode}" class="alert alert-info small">
+        <span th:text="#{admin.login.demoHint}">Testa adminpanelen:</span>
+        <code>demo / demo123</code>
+    </div>
+
+    <form th:action="@{/admin/login}" method="post" class="card border-0 shadow-sm p-4">
+        <div class="mb-3">
+            <label for="username" class="form-label" th:text="#{admin.login.username}">Användarnamn</label>
+            <input type="text" class="form-control" id="username" name="username" required autofocus
+                   autocomplete="username">
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label" th:text="#{admin.login.password}">Lösenord</label>
+            <input type="password" class="form-control" id="password" name="password" required
+                   autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-accent w-100" th:text="#{admin.login.submit}">Logga in</button>
+    </form>
+</main>
+</body>
+</html>

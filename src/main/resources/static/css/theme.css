@@ -1,0 +1,210 @@
+/* Store theme — brand colors are injected as CSS variables from store settings. */
+
+:root {
+    --brand: #1f2a44;
+    --accent: #e8590c;
+}
+
+.brand-bg {
+    background-color: var(--brand) !important;
+}
+
+.accent-bg {
+    background-color: var(--accent) !important;
+}
+
+.text-accent {
+    color: var(--accent) !important;
+}
+
+.btn-accent {
+    background-color: var(--accent);
+    border: none;
+    color: #fff;
+}
+
+.btn-accent:hover,
+.btn-accent:focus {
+    background-color: color-mix(in srgb, var(--accent) 85%, black);
+    color: #fff;
+}
+
+.btn-outline-accent {
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+}
+
+.btn-outline-accent:hover {
+    background-color: var(--accent);
+    color: #fff;
+}
+
+/* Hero */
+.hero {
+    background: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 70%, black));
+}
+
+/* Demo ribbon */
+.demo-ribbon {
+    background: #ffc107;
+    color: #241a00;
+    letter-spacing: .02em;
+}
+
+/* Navbar */
+.lang-link {
+    color: rgba(255, 255, 255, .75);
+    text-decoration: none;
+}
+
+.lang-link:hover {
+    color: #fff;
+}
+
+.footer-link {
+    color: rgba(255, 255, 255, .6);
+}
+
+.footer-link:hover {
+    color: #fff;
+}
+
+/* Product cards */
+.product-card {
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .12) !important;
+}
+
+.card-img-wrap {
+    aspect-ratio: 3 / 4;
+    background: #f2f3f5;
+    border-radius: .375rem .375rem 0 0;
+    overflow: hidden;
+}
+
+.card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: .5rem;
+}
+
+.card-img-wrap .no-image {
+    width: 100%;
+    height: 100%;
+}
+
+.sold-out-badge {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+}
+
+.product-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 2.6em;
+    line-height: 1.3;
+}
+
+/* Product page gallery */
+.gallery-main {
+    aspect-ratio: 3 / 4;
+    background: #f2f3f5;
+    border-radius: .5rem;
+    overflow: hidden;
+}
+
+.gallery-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 1rem;
+}
+
+.gallery-thumb {
+    width: 64px;
+    height: 84px;
+    object-fit: contain;
+    background: #f2f3f5;
+    border-radius: .25rem;
+    cursor: pointer;
+    border: 2px solid transparent;
+    padding: .25rem;
+}
+
+.gallery-thumb.active {
+    border-color: var(--accent);
+}
+
+/* Condition badges */
+.cond-badge {
+    font-size: .72rem;
+    font-weight: 700;
+    padding: .2rem .45rem;
+    border-radius: .25rem;
+    color: #fff;
+    display: inline-block;
+    min-width: 2.6em;
+    text-align: center;
+}
+
+.cond-NM { background: #2f9e44; }
+.cond-LP { background: #66a80f; }
+.cond-MP { background: #f08c00; }
+.cond-HP { background: #e8590c; }
+.cond-DMG { background: #e03131; }
+
+.graded-badge {
+    background: linear-gradient(135deg, #845ef7, #5f3dc4);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 700;
+    padding: .2rem .45rem;
+    border-radius: .25rem;
+    display: inline-block;
+}
+
+/* Variant table */
+.variant-table td {
+    vertical-align: middle;
+}
+
+/* Admin */
+.admin-sidebar {
+    min-height: 100%;
+    background: var(--brand);
+}
+
+.admin-sidebar .nav-link {
+    color: rgba(255, 255, 255, .75);
+    border-radius: .375rem;
+}
+
+.admin-sidebar .nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, .08);
+}
+
+.admin-sidebar .nav-link.active {
+    color: #fff;
+    background: rgba(255, 255, 255, .15);
+}
+
+/* Misc */
+a {
+    color: var(--accent);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--accent) 25%, transparent);
+}

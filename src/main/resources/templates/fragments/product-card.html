@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="card(product)" class="card product-card h-100 border-0 shadow-sm">
+    <a th:href="@{'/p/' + ${product.slug}}" class="text-decoration-none text-reset d-flex flex-column h-100">
+        <div class="card-img-wrap position-relative">
+            <img th:if="${product.mainImagePath() != null}"
+                 th:src="@{'/uploads/' + ${product.mainImagePath()}}"
+                 th:alt="${product.name}" loading="lazy">
+            <div th:unless="${product.mainImagePath() != null}"
+                 class="no-image d-flex align-items-center justify-content-center text-muted small"
+                 th:text="#{product.noImage}">Ingen bild</div>
+            <span th:if="${!product.inStock()}" class="badge bg-secondary sold-out-badge"
+                  th:text="#{product.soldOut}">Slutsåld</span>
+        </div>
+        <div class="card-body py-2 px-3 d-flex flex-column">
+            <div class="small text-muted text-truncate" th:if="${product.setName != null}"
+                 th:text="${product.setName}">Set</div>
+            <div class="fw-semibold product-title" th:text="${product.name}">Kortnamn</div>
+            <div class="mt-auto pt-1 fw-bold">
+                <span th:if="${product.hasPriceRange()}" class="fw-normal small" th:text="#{product.from}">Från</span>
+                <span th:text="${@fmt.money(product.minPriceMinor())}">100 kr</span>
+            </div>
+        </div>
+    </a>
+</div>
+
+</body>
+</html>

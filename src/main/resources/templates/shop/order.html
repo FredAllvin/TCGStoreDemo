@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="#{order.title} + ' – ' + ${settings.storeName}">Tack!</title>
+</head>
+<body>
+<main class="container py-4 flex-grow-1" style="max-width: 720px;">
+
+    <div class="text-center mb-4">
+        <h1 class="h3" th:text="#{order.title}">Tack för din beställning!</h1>
+        <p class="text-muted">
+            <span th:text="#{order.number}">Ordernummer</span>:
+            <strong th:text="${order.orderNumber}">2026-0001</strong>
+        </p>
+        <span class="badge fs-6"
+              th:classappend="${order.status.name() == 'PAID'} ? 'bg-success'
+                            : (${order.status.name() == 'PENDING'} ? 'bg-warning text-dark'
+                            : (${order.status.name() == 'SHIPPED'} ? 'bg-info text-dark' : 'bg-secondary'))"
+              th:text="#{'order.status.' + ${order.status}}">Betald</span>
+    </div>
+
+    <div th:if="${order.status.name() == 'PENDING'}" class="alert alert-warning"
+         th:text="#{order.paymentPending}">Betalningen behandlas…</div>
+
+    <p class="text-center small text-muted">
+        <span th:text="#{order.confirmation}">Vi har tagit emot din beställning. En bekräftelse skickas till</span>
+        <span th:text="${order.email}">kund@example.com</span>
+    </p>
+
+    <div class="card border-0 shadow-sm p-3 mb-3">
+        <h2 class="h6 text-uppercase text-muted" th:text="#{order.items}">Produkter</h2>
+        <table class="table table-sm align-middle mb-2">
+            <tbody>
+            <tr th:each="line : ${order.lines}">
+                <td>
+                    <span th:text="${line.productName}">Kort – Set</span>
+                    <div class="small text-muted" th:if="${!line.variantLabel.isEmpty()}"
+                         th:text="${line.variantLabel}">NM</div>
+                </td>
+                <td class="text-nowrap small" th:text="${line.qty} + ' × ' + ${@fmt.currency(line.unitPriceMinor, order.currency)}">1 × 45 kr</td>
+                <td class="text-end fw-semibold" th:text="${@fmt.currency(line.lineTotalMinor, order.currency)}">45 kr</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-between small">
+            <span th:text="#{cart.subtotal}">Delsumma</span>
+            <span th:text="${@fmt.currency(order.subtotalMinor, order.currency)}">135 kr</span>
+        </div>
+        <div class="d-flex justify-content-between small">
+            <span>
+                <span th:text="#{order.shippingMethod}">Frakt</span>
+                <span class="text-muted" th:text="'(' + ${order.shippingName} + ')'">(PostNord)</span>
+            </span>
+            <span th:text="${order.shippingMinor == 0} ? #{checkout.freeShipping} : ${@fmt.currency(order.shippingMinor, order.currency)}">69 kr</span>
+        </div>
+        <hr class="my-2">
+        <div class="d-flex justify-content-between">
+            <span class="fw-semibold" th:text="#{checkout.total}">Att betala</span>
+            <span class="fw-bold" th:text="${@fmt.currency(order.totalMinor, order.currency)}">204 kr</span>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm p-3">
+        <h2 class="h6 text-uppercase text-muted" th:text="#{checkout.address}">Leveransadress</h2>
+        <div class="small">
+            <div th:text="${order.customerName}">Namn</div>
+            <div th:text="${order.addressLine1}">Adress</div>
+            <div th:if="${order.addressLine2 != null}" th:text="${order.addressLine2}"></div>
+            <div th:text="${order.postalCode} + ' ' + ${order.city}">123 45 Stad</div>
+            <div th:text="${order.country}">Sverige</div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

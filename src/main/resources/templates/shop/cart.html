@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="#{cart.title} + ' – ' + ${settings.storeName}">Varukorg</title>
+</head>
+<body>
+<main class="container py-4 flex-grow-1">
+
+    <h1 class="h3 mb-3" th:text="#{cart.title}">Varukorg</h1>
+
+    <div th:if="${cart.adjusted}" class="alert alert-warning" th:text="#{cart.adjusted}">
+        Antalet har justerats efter tillgängligt lager.
+    </div>
+
+    <div th:if="${cart.isEmpty()}" class="text-center text-muted py-5">
+        <p class="h6" th:text="#{cart.empty}">Din varukorg är tom.</p>
+        <a class="btn btn-accent mt-2" th:href="@{/}" th:text="#{cart.continueShopping}">Fortsätt handla</a>
+    </div>
+
+    <div th:unless="${cart.isEmpty()}" class="row g-4">
+        <div class="col-lg-8">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="small text-muted">
+                    <tr>
+                        <th colspan="2" th:text="#{cart.product}">Produkt</th>
+                        <th th:text="#{cart.price}">Pris</th>
+                        <th th:text="#{cart.qty}">Antal</th>
+                        <th class="text-end" th:text="#{cart.total}">Summa</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="line : ${cart.lines}">
+                        <td style="width: 56px">
+                            <img th:if="${line.product.mainImagePath() != null}"
+                                 th:src="@{'/uploads/' + ${line.product.mainImagePath()}}"
+                                 alt="" style="width: 48px; height: 64px; object-fit: contain;" class="bg-light rounded">
+                        </td>
+                        <td>
+                            <a class="text-reset fw-semibold text-decoration-none"
+                               th:href="@{'/p/' + ${line.product.slug}}" th:text="${line.product.name}">Kort</a>
+                            <div class="small text-muted" th:if="${!line.variant.displayLabel().isEmpty()}"
+                                 th:text="${line.variant.displayLabel()}">NM · Foil</div>
+                        </td>
+                        <td th:text="${@fmt.money(line.variant.priceMinor)}">45 kr</td>
+                        <td style="width: 130px">
+                            <form th:action="@{/cart/update}" method="post" class="d-flex gap-1">
+                                <input type="hidden" name="variantId" th:value="${line.variant.id}">
+                                <input type="number" name="qty" class="form-control form-control-sm" style="width: 64px"
+                                       th:value="${line.qty}" min="0" th:max="${line.variant.stockQty}">
+                                <button class="btn btn-sm btn-outline-secondary" type="submit"
+                                        th:text="#{cart.update}">Uppdatera</button>
+                            </form>
+                        </td>
+                        <td class="text-end fw-semibold" th:text="${@fmt.money(line.lineTotal)}">90 kr</td>
+                        <td class="text-end" style="width: 40px">
+                            <form th:action="@{/cart/remove}" method="post">
+                                <input type="hidden" name="variantId" th:value="${line.variant.id}">
+                                <button class="btn btn-sm btn-link text-danger p-0" type="submit"
+                                        th:text="#{cart.remove}">Ta bort</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span th:text="#{cart.subtotal}">Delsumma</span>
+                    <span class="fw-bold" th:text="${@fmt.money(cart.subtotal)}">135 kr</span>
+                </div>
+                <div class="small text-muted mb-3" th:text="#{checkout.vatIncluded}">Alla priser inkl. moms</div>
+                <a class="btn btn-accent w-100" th:href="@{/checkout}" th:text="#{cart.toCheckout}">Till kassan</a>
+                <a class="btn btn-link w-100 mt-1" th:href="@{/}" th:text="#{cart.continueShopping}">Fortsätt handla</a>
+            </div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

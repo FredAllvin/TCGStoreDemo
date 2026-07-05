@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="#{pay.mock.title} + ' – ' + ${settings.storeName}">Betalning</title>
+</head>
+<body>
+<main class="container py-5 flex-grow-1" style="max-width: 480px;">
+
+    <div class="card border-0 shadow-sm p-4">
+        <h1 class="h4 mb-3" th:text="#{pay.mock.title}">Betalning</h1>
+
+        <div class="alert alert-info small" th:text="#{pay.mock.info}">
+            Detta är en demobetalning – inga pengar dras.
+        </div>
+
+        <div class="d-flex justify-content-between py-2 border-bottom">
+            <span th:text="#{order.number}">Ordernummer</span>
+            <span class="fw-semibold" th:text="${order.orderNumber}">2026-0001</span>
+        </div>
+        <div class="d-flex justify-content-between py-2 mb-3">
+            <span th:text="#{checkout.total}">Att betala</span>
+            <span class="h5 mb-0" th:text="${@fmt.money(order.totalMinor)}">204 kr</span>
+        </div>
+
+        <form th:action="@{'/pay/mock/' + ${order.orderNumber}(t=${order.accessToken})}" method="post" class="mb-2">
+            <button type="submit" class="btn btn-accent w-100" th:text="#{pay.mock.pay}">Betala nu (demo)</button>
+        </form>
+        <form th:action="@{'/pay/mock/' + ${order.orderNumber} + '/cancel'(t=${order.accessToken})}" method="post">
+            <button type="submit" class="btn btn-link w-100 text-muted" th:text="#{pay.mock.cancel}">Avbryt köp</button>
+        </form>
+    </div>
+
+</main>
+</body>
+</html>

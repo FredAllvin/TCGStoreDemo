@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="#{checkout.title} + ' – ' + ${settings.storeName}">Kassa</title>
+</head>
+<body>
+<main class="container py-4 flex-grow-1">
+
+    <h1 class="h3 mb-4" th:text="#{checkout.title}">Kassa</h1>
+
+    <form th:action="@{/checkout}" th:object="${form}" method="post" novalidate>
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <h2 class="h6 text-uppercase text-muted" th:text="#{checkout.contact}">Kontaktuppgifter</h2>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label" for="name" th:text="#{checkout.name}">Namn</label>
+                        <input type="text" class="form-control" id="name" th:field="*{name}"
+                               th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{name}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="email" th:text="#{checkout.email}">E-post</label>
+                        <input type="email" class="form-control" id="email" th:field="*{email}"
+                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{email}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="phone" th:text="#{checkout.phone}">Telefon</label>
+                        <input type="text" class="form-control" id="phone" th:field="*{phone}">
+                    </div>
+                </div>
+
+                <h2 class="h6 text-uppercase text-muted" th:text="#{checkout.address}">Leveransadress</h2>
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <label class="form-label" for="addressLine1" th:text="#{checkout.address1}">Adress</label>
+                        <input type="text" class="form-control" id="addressLine1" th:field="*{addressLine1}"
+                               th:classappend="${#fields.hasErrors('addressLine1')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{addressLine1}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="addressLine2" th:text="#{checkout.address2}">Adressrad 2</label>
+                        <input type="text" class="form-control" id="addressLine2" th:field="*{addressLine2}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="postalCode" th:text="#{checkout.postalCode}">Postnummer</label>
+                        <input type="text" class="form-control" id="postalCode" th:field="*{postalCode}"
+                               th:classappend="${#fields.hasErrors('postalCode')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{postalCode}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="city" th:text="#{checkout.city}">Ort</label>
+                        <input type="text" class="form-control" id="city" th:field="*{city}"
+                               th:classappend="${#fields.hasErrors('city')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{city}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="country" th:text="#{checkout.country}">Land</label>
+                        <input type="text" class="form-control" id="country" th:field="*{country}"
+                               th:classappend="${#fields.hasErrors('country')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{country}"></div>
+                    </div>
+                </div>
+
+                <h2 class="h6 text-uppercase text-muted" th:text="#{checkout.shipping}">Frakt</h2>
+                <div class="mb-4">
+                    <div class="form-check card p-3 ps-5 mb-2 border" th:each="option : ${shippingOptions}">
+                        <input class="form-check-input" type="radio" th:field="*{shippingOptionId}"
+                               th:value="${option.id}" th:id="'ship-' + ${option.id}">
+                        <label class="form-check-label d-flex justify-content-between w-100"
+                               th:for="'ship-' + ${option.id}">
+                            <span th:text="${option.name}">PostNord</span>
+                            <span class="fw-semibold"
+                                  th:text="${shippingCosts[option.id] == 0} ? #{checkout.freeShipping} : ${@fmt.money(shippingCosts[option.id])}">69 kr</span>
+                        </label>
+                    </div>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('shippingOptionId')}"
+                         th:errors="*{shippingOptionId}"></div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" for="note" th:text="#{checkout.note}">Meddelande</label>
+                    <textarea class="form-control" id="note" rows="2" th:field="*{note}"></textarea>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm p-3 position-sticky" style="top: 90px;">
+                    <h2 class="h6 text-uppercase text-muted" th:text="#{checkout.summary}">Din beställning</h2>
+                    <div class="d-flex justify-content-between small py-1" th:each="line : ${cart.lines}">
+                        <span>
+                            <span th:text="${line.qty} + ' × ' + ${line.product.name}">1 × Kort</span>
+                            <span class="text-muted" th:if="${!line.variant.displayLabel().isEmpty()}"
+                                  th:text="'(' + ${line.variant.displayLabel()} + ')'">(NM)</span>
+                        </span>
+                        <span th:text="${@fmt.money(line.lineTotal)}">45 kr</span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between">
+                        <span th:text="#{cart.subtotal}">Delsumma</span>
+                        <span class="fw-semibold" th:text="${@fmt.money(cart.subtotal)}">135 kr</span>
+                    </div>
+                    <div class="small text-muted mb-3" th:text="#{checkout.vatIncluded}">Alla priser inkl. moms</div>
+                    <button type="submit" class="btn btn-accent w-100" th:text="#{checkout.pay}">Gå till betalning</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</main>
+</body>
+</html>

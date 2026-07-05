@@ -11,6 +11,10 @@
         Fel användarnamn eller lösenord.
     </div>
 
+    <div th:if="${param.locked != null}" class="alert alert-danger" th:text="#{admin.login.locked}">
+        För många misslyckade försök.
+    </div>
+
     <div th:if="${demoMode}" class="alert alert-info small">
         <span th:text="#{admin.login.demoHint}">Testa adminpanelen:</span>
         <code>demo / demo123</code>

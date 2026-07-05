@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: tcgshop
+  messages:
+    basename: messages
+    fallback-to-system-locale: false
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: true
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 6MB
+      max-request-size: 30MB
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  forward-headers-strategy: framework
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+app:
+  upload-dir: ./data/uploads
+  base-url: http://localhost:8080
+  admin:
+    username: ${ADMIN_USERNAME:}
+    password: ${ADMIN_PASSWORD:}
+
+payments:
+  provider: mock
+
+stripe:
+  secret-key: ${STRIPE_SECRET_KEY:}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET:}

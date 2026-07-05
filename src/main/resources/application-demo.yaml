@@ -1,0 +1,10 @@
+# Demo profile: run *on top of* dev or prod (e.g. --spring.profiles.active=prod,demo).
+# Seeds placeholder data, shows the demo ribbon + demo credentials, resets nightly.
+
+demo:
+  reset-cron: "0 0 4 * * *"
+
+app:
+  admin:
+    username: demo
+    password: demo123

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="#{search.title} + ' – ' + ${settings.storeName}">Sökresultat</title>
+</head>
+<body>
+<main class="container py-4 flex-grow-1">
+
+    <h1 class="h3 mb-3">
+        <span th:text="#{search.resultsFor}">Resultat för</span>
+        <em th:text="'”' + ${q} + '”'">”pikachu”</em>
+        <span class="text-muted small" th:text="'(' + ${products.totalElements} + ')'">(3)</span>
+    </h1>
+
+    <div th:if="${products.isEmpty()}" class="text-center text-muted py-5">
+        <p class="h6" th:text="#{search.empty}">Inga träffar.</p>
+        <a class="btn btn-accent mt-2" th:href="@{/}" th:text="#{cart.continueShopping}">Fortsätt handla</a>
+    </div>
+
+    <div class="row g-3 row-cols-2 row-cols-md-3 row-cols-lg-4" th:unless="${products.isEmpty()}">
+        <div class="col" th:each="p : ${products.content}">
+            <div th:replace="~{fragments/product-card :: card(${p})}"></div>
+        </div>
+    </div>
+
+    <nav th:if="${products.totalPages > 1}" class="d-flex justify-content-center align-items-center gap-3 mt-4">
+        <a class="btn btn-sm btn-outline-secondary" th:classappend="${products.first} ? 'disabled'"
+           th:href="@{/search(q=${q}, page=${products.number - 1})}" th:text="#{page.prev}">Föregående</a>
+        <span class="small text-muted" th:text="#{page.of(${products.number + 1}, ${products.totalPages})}">Sida 1 av 2</span>
+        <a class="btn btn-sm btn-outline-secondary" th:classappend="${products.last} ? 'disabled'"
+           th:href="@{/search(q=${q}, page=${products.number + 1})}" th:text="#{page.next}">Nästa</a>
+    </nav>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,61 @@
+# Production / demo deployment: app + Postgres + Caddy (automatic HTTPS).
+# Configure .env first (see deploy/.env.example), then:
+#   docker compose -f compose.prod.yaml up -d --build
+services:
+  app:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES:-prod}
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      APP_BASE_URL: https://${SITE_DOMAIN}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      PAYMENTS_PROVIDER: ${PAYMENTS_PROVIDER:-mock}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+    volumes:
+      - uploads:/app/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  pgdata:
+  uploads:
+  caddy_data:
+  caddy_config:

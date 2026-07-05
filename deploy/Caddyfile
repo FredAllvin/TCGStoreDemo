@@ -1,0 +1,8 @@
+{$SITE_DOMAIN}
+
+encode gzip
+
+# HSTS – browsers will refuse plain http after the first visit
+header Strict-Transport-Security "max-age=31536000"
+
+reverse_proxy app:8080

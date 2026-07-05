@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="#{admin.nav.settings} + ' – Admin'">Inställningar</title>
+</head>
+<body>
+<main>
+    <h1 class="h4 mb-3" th:text="#{admin.nav.settings}">Inställningar</h1>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <form th:action="@{/admin/settings}" method="post" enctype="multipart/form-data">
+                <div class="card border-0 shadow-sm p-3 mb-4">
+                    <h2 class="h6 text-uppercase text-muted" th:text="#{admin.settings.branding}">Varumärke</h2>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="#{admin.settings.storeName}">Butiksnamn</label>
+                            <input type="text" name="storeName" class="form-control" required maxlength="120"
+                                   th:value="${settings.storeName}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="#{admin.settings.tagline}">Slogan</label>
+                            <input type="text" name="tagline" class="form-control" maxlength="200"
+                                   th:value="${settings.tagline}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" th:text="#{admin.settings.primaryColor}">Huvudfärg</label>
+                            <input type="color" name="primaryColor" class="form-control form-control-color w-100"
+                                   th:value="${settings.primaryColor}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" th:text="#{admin.settings.accentColor}">Accentfärg</label>
+                            <input type="color" name="accentColor" class="form-control form-control-color w-100"
+                                   th:value="${settings.accentColor}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="#{admin.settings.logo}">Logotyp</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:if="${settings.logoPath != null}" th:src="@{'/uploads/' + ${settings.logoPath}}"
+                                     alt="" style="height: 36px;" class="bg-light rounded border p-1">
+                                <input type="file" name="logo" class="form-control form-control-sm"
+                                       accept=".jpg,.jpeg,.png">
+                            </div>
+                            <div class="form-check mt-1" th:if="${settings.logoPath != null}">
+                                <input class="form-check-input" type="checkbox" name="removeLogo" value="true"
+                                       id="removeLogo">
+                                <label class="form-check-label small" for="removeLogo"
+                                       th:text="#{admin.settings.removeLogo}">Ta bort logotypen</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm p-3 mb-4">
+                    <h2 class="h6 text-uppercase text-muted" th:text="#{admin.settings.money}">Valuta & frakt</h2>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label" th:text="#{admin.settings.currency}">Valuta</label>
+                            <select name="currency" class="form-select">
+                                <option th:each="cur : ${ {'SEK','EUR','NOK','DKK'} }" th:value="${cur}"
+                                        th:selected="${settings.currency == cur}" th:text="${cur}">SEK</option>
+                            </select>
+                            <div class="form-text" th:text="#{admin.settings.currencyHint}">Priser konverteras inte automatiskt.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" th:text="#{admin.settings.eurRate}">EUR-visningskurs</label>
+                            <input type="text" name="eurDisplayRate" class="form-control"
+                                   th:value="${settings.eurDisplayRate}" placeholder="0.088">
+                            <div class="form-text" th:text="#{admin.settings.eurRateHint}">Visar ≈ €-pris för engelska besökare. Lämna tomt för att stänga av.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" th:text="#{admin.settings.freeShip}">Fri frakt över (kr)</label>
+                            <input type="text" name="freeShipThreshold" class="form-control"
+                                   th:value="${settings.freeShipThresholdMinor != null ? @fmt.decimal(settings.freeShipThresholdMinor) : ''}"
+                                   placeholder="1000">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm p-3 mb-4">
+                    <h2 class="h6 text-uppercase text-muted" th:text="#{admin.settings.contact}">Kontakt & socialt</h2>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="#{checkout.email}">E-post</label>
+                            <input type="email" name="contactEmail" class="form-control"
+                                   th:value="${settings.contactEmail}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="#{checkout.phone}">Telefon</label>
+                            <input type="text" name="contactPhone" class="form-control"
+                                   th:value="${settings.contactPhone}">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" th:text="#{admin.settings.address}">Adress</label>
+                            <input type="text" name="addressLine" class="form-control"
+                                   th:value="${settings.addressLine}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Instagram</label>
+                            <input type="url" name="instagramUrl" class="form-control"
+                                   th:value="${settings.instagramUrl}" placeholder="https://…">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Facebook</label>
+                            <input type="url" name="facebookUrl" class="form-control"
+                                   th:value="${settings.facebookUrl}" placeholder="https://…">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Discord</label>
+                            <input type="url" name="discordUrl" class="form-control"
+                                   th:value="${settings.discordUrl}" placeholder="https://…">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-accent" th:text="#{admin.save}">Spara</button>
+            </form>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm p-3">
+                <h2 class="h6 text-uppercase text-muted" th:text="#{checkout.shipping}">Fraktalternativ</h2>
+                <table class="table table-sm align-middle">
+                    <tbody>
+                    <tr th:each="option : ${shippingList}">
+                        <td>
+                            <span th:text="${option.name}"
+                                  th:classappend="${!option.active} ? 'text-muted text-decoration-line-through'">PostNord</span>
+                        </td>
+                        <td class="text-end" th:text="${@fmt.money(option.priceMinor)}">69 kr</td>
+                        <td class="text-end text-nowrap">
+                            <form th:action="@{'/admin/settings/shipping/' + ${option.id} + '/toggle'}" method="post"
+                                  class="d-inline">
+                                <button class="btn btn-sm btn-outline-secondary" type="submit"
+                                        th:text="${option.active} ? #{admin.settings.deactivate} : #{admin.settings.activate}">Av</button>
+                            </form>
+                            <form th:action="@{'/admin/settings/shipping/' + ${option.id} + '/delete'}" method="post"
+                                  class="d-inline" onsubmit="return confirm(this.dataset.msg)"
+                                  th:data-msg="#{admin.confirmDelete}">
+                                <button class="btn btn-sm btn-link text-danger" type="submit"
+                                        th:text="#{admin.delete}">Ta bort</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <form th:action="@{/admin/settings/shipping}" method="post" class="d-flex gap-2">
+                    <input type="text" name="name" class="form-control form-control-sm" required
+                           th:placeholder="#{admin.settings.shippingName}">
+                    <input type="text" name="price" class="form-control form-control-sm" style="width: 90px"
+                           required placeholder="69">
+                    <button class="btn btn-sm btn-accent text-nowrap" type="submit"
+                            th:text="#{admin.settings.addShipping}">Lägg till</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="#{admin.nav.products} + ' – Admin'">Produkter</title>
+</head>
+<body>
+<main>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h4 mb-0" th:text="#{admin.nav.products}">Produkter</h1>
+        <a class="btn btn-accent" th:href="@{/admin/products/new}" th:text="#{admin.products.new}">+ Ny produkt</a>
+    </div>
+
+    <form method="get" class="mb-3" style="max-width: 380px;">
+        <input type="search" class="form-control" name="q" th:value="${q}"
+               th:placeholder="#{admin.products.search}">
+    </form>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="small text-muted">
+                <tr>
+                    <th></th>
+                    <th th:text="#{admin.products.name}">Namn</th>
+                    <th th:text="#{admin.products.category}">Kategori</th>
+                    <th th:text="#{admin.products.variants}">Varianter</th>
+                    <th th:text="#{product.price}">Pris</th>
+                    <th th:text="#{admin.products.status}">Status</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p : ${products.content}">
+                    <td style="width: 52px">
+                        <img th:if="${p.mainImagePath() != null}" th:src="@{'/uploads/' + ${p.mainImagePath()}}"
+                             alt="" style="width: 40px; height: 54px; object-fit: contain;" class="bg-light rounded">
+                    </td>
+                    <td>
+                        <a class="fw-semibold text-decoration-none" th:href="@{'/admin/products/' + ${p.id} + '/edit'}"
+                           th:text="${p.name}">Namn</a>
+                        <div class="small text-muted" th:if="${p.setName != null}" th:text="${p.setName}">Set</div>
+                    </td>
+                    <td class="small"
+                        th:text="${p.category.parent != null ? p.category.parent.name + ' / ' + p.category.name : p.category.name}">Kategori</td>
+                    <td class="small" th:text="${p.variants.size()}">3</td>
+                    <td class="small" th:text="${@fmt.money(p.minPriceMinor())}">45 kr</td>
+                    <td>
+                        <span th:if="${!p.active}" class="badge bg-secondary" th:text="#{admin.products.inactive}">Dold</span>
+                        <span th:if="${p.featured}" class="badge accent-bg" th:text="#{admin.products.featured}">Utvald</span>
+                        <span th:if="${!p.inStock()}" class="badge bg-danger" th:text="#{product.soldOut}">Slutsåld</span>
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" th:href="@{'/admin/products/' + ${p.id} + '/edit'}"
+                           th:text="#{admin.edit}">Redigera</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <nav th:if="${products.totalPages > 1}" class="d-flex justify-content-center align-items-center gap-3 mt-3">
+        <a class="btn btn-sm btn-outline-secondary" th:classappend="${products.first} ? 'disabled'"
+           th:href="@{/admin/products(q=${q}, page=${products.number - 1})}" th:text="#{page.prev}">Föregående</a>
+        <span class="small text-muted" th:text="#{page.of(${products.number + 1}, ${products.totalPages})}">1/2</span>
+        <a class="btn btn-sm btn-outline-secondary" th:classappend="${products.last} ? 'disabled'"
+           th:href="@{/admin/products(q=${q}, page=${products.number + 1})}" th:text="#{page.next}">Nästa</a>
+    </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="${isNew ? '+ ' : ''} + ${product.name ?: 'Ny produkt'} + ' – Admin'">Produkt</title>
+</head>
+<body>
+<main>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h4 mb-0">
+            <a th:href="@{/admin/products}" class="text-decoration-none text-muted">←</a>
+            <span th:text="${isNew} ? #{admin.products.new} : ${product.name}">Produkt</span>
+        </h1>
+        <a th:unless="${isNew}" class="btn btn-sm btn-outline-secondary" target="_blank"
+           th:href="@{'/p/' + ${product.slug}}" th:text="#{admin.products.viewInStore}">Visa i butiken ↗</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <!-- Product fields -->
+            <div class="card border-0 shadow-sm p-3 mb-4">
+                <form th:action="${isNew} ? @{/admin/products} : @{'/admin/products/' + ${product.id}}" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label" th:text="#{admin.products.name}">Namn</label>
+                            <input type="text" name="name" class="form-control" required maxlength="200"
+                                   th:value="${product.name}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" th:text="#{admin.products.category}">Kategori</label>
+                            <select name="categoryId" class="form-select" required>
+                                <option th:each="c : ${allCategories}" th:value="${c.id}"
+                                        th:selected="${product.category != null && product.category.id == c.id}"
+                                        th:text="${c.parent != null ? c.parent.name + ' / ' + c.name : c.name}">Kategori</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label" th:text="#{product.set}">Set</label>
+                            <input type="text" name="setName" class="form-control" maxlength="200"
+                                   th:value="${product.setName}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" th:text="#{product.cardNumber}">Kortnummer</label>
+                            <input type="text" name="cardNumber" class="form-control" maxlength="50"
+                                   th:value="${product.cardNumber}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" th:text="#{product.rarity}">Raritet</label>
+                            <input type="text" name="rarity" class="form-control" maxlength="80"
+                                   th:value="${product.rarity}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" th:text="#{product.language}">Språk</label>
+                            <input type="text" name="language" class="form-control" maxlength="40"
+                                   th:value="${product.language}" placeholder="EN / JP / SV">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" th:text="#{product.description}">Beskrivning</label>
+                            <textarea name="description" class="form-control" rows="3"
+                                      th:text="${product.description}"></textarea>
+                        </div>
+                        <div class="col-12 d-flex gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="featured" value="true"
+                                       id="featured" th:checked="${product.featured}">
+                                <label class="form-check-label" for="featured"
+                                       th:text="#{admin.products.featured}">Utvald</label>
+                            </div>
+                            <div class="form-check" th:unless="${isNew}">
+                                <input class="form-check-input" type="checkbox" name="active" value="true"
+                                       id="active" th:checked="${product.active}">
+                                <label class="form-check-label" for="active"
+                                       th:text="#{admin.products.active}">Synlig i butiken</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-accent mt-3" th:text="#{admin.save}">Spara</button>
+                </form>
+            </div>
+
+            <!-- Variants -->
+            <div class="card border-0 shadow-sm p-3 mb-4" th:unless="${isNew}">
+                <h2 class="h6 text-uppercase text-muted" th:text="#{admin.variants.title}">Varianter & lager</h2>
+
+                <div class="table-responsive" th:if="${!product.variants.isEmpty()}">
+                    <table class="table table-sm align-middle">
+                        <thead class="small text-muted">
+                        <tr>
+                            <th th:text="#{admin.variants.variant}">Variant</th>
+                            <th style="width: 110px" th:text="#{product.price} + ' (kr)'">Pris</th>
+                            <th style="width: 90px" th:text="#{product.stock}">Lager</th>
+                            <th style="width: 70px" th:text="#{admin.products.active}">Aktiv</th>
+                            <th style="width: 160px"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="v : ${product.variants}">
+                            <td>
+                                <form th:id="'vf' + ${v.id}" th:action="@{'/admin/products/variants/' + ${v.id}}"
+                                      method="post" class="d-none">
+                                    <input type="hidden" name="productId" th:value="${product.id}">
+                                </form>
+                                <span th:if="${v.kind.name() == 'STANDARD'}" class="badge bg-secondary">Standard</span>
+                                <span th:if="${v.kind.name() == 'RAW'}" class="cond-badge"
+                                      th:classappend="'cond-' + ${v.condition}" th:text="${v.condition}">NM</span>
+                                <span th:if="${v.kind.name() == 'RAW' && v.finish != null && v.finish.name() != 'NONFOIL'}"
+                                      class="small text-muted" th:text="#{'finish.' + ${v.finish}}">Foil</span>
+                                <span th:if="${v.kind.name() == 'GRADED'}" class="graded-badge"
+                                      th:text="${v.grader} + ' ' + ${v.grade}">PSA 10</span>
+                                <div class="small text-muted" th:if="${v.certNumber != null}"
+                                     th:text="'#' + ${v.certNumber}">#cert</div>
+                            </td>
+                            <td>
+                                <input type="text" name="price" class="form-control form-control-sm"
+                                       th:form="'vf' + ${v.id}" th:value="${@fmt.decimal(v.priceMinor)}" required>
+                            </td>
+                            <td>
+                                <input type="number" name="stockQty" class="form-control form-control-sm" min="0"
+                                       th:form="'vf' + ${v.id}" th:value="${v.stockQty}" required>
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" name="active" value="true" class="form-check-input"
+                                       th:form="'vf' + ${v.id}" th:checked="${v.active}">
+                            </td>
+                            <td class="text-end text-nowrap">
+                                <button type="submit" th:form="'vf' + ${v.id}" class="btn btn-sm btn-outline-secondary"
+                                        th:text="#{admin.save}">Spara</button>
+                                <form th:action="@{'/admin/products/variants/' + ${v.id} + '/delete'}" method="post"
+                                      class="d-inline" onsubmit="return confirm(this.dataset.msg)"
+                                      th:data-msg="#{admin.confirmDelete}">
+                                    <button type="submit" class="btn btn-sm btn-link text-danger"
+                                            th:text="#{admin.delete}">Ta bort</button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="h6 mt-3" th:text="#{admin.variants.add}">Lägg till variant</h3>
+                <form th:action="@{'/admin/products/' + ${product.id} + '/variants'}" method="post"
+                      class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label small" th:text="#{admin.variants.kind}">Typ</label>
+                        <select name="kind" class="form-select form-select-sm" id="variantKind"
+                                onchange="document.getElementById('rawFields').classList.toggle('d-none', this.value !== 'RAW');
+                                          document.getElementById('gradedFields').classList.toggle('d-none', this.value !== 'GRADED');">
+                            <option value="STANDARD" th:text="#{admin.variants.kind.standard}">Standard (sealed/tillbehör)</option>
+                            <option value="RAW" th:text="#{admin.variants.kind.raw}">Ograderat kort</option>
+                            <option value="GRADED" th:text="#{admin.variants.kind.graded}">Graderat kort</option>
+                        </select>
+                    </div>
+                    <div class="col-md-9 d-none" id="rawFields">
+                        <div class="row g-2">
+                            <div class="col-auto">
+                                <label class="form-label small" th:text="#{product.condition}">Skick</label>
+                                <select name="condition" class="form-select form-select-sm">
+                                    <option value="NM">NM – Near Mint</option>
+                                    <option value="LP">LP – Lightly Played</option>
+                                    <option value="MP">MP – Moderately Played</option>
+                                    <option value="HP">HP – Heavily Played</option>
+                                    <option value="DMG">DMG – Damaged</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-label small" th:text="#{product.finish}">Utförande</label>
+                                <select name="finish" class="form-select form-select-sm">
+                                    <option value="NONFOIL" th:text="#{finish.NONFOIL}">Normal</option>
+                                    <option value="FOIL" th:text="#{finish.FOIL}">Foil</option>
+                                    <option value="REVERSE" th:text="#{finish.REVERSE}">Reverse Holo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9 d-none" id="gradedFields">
+                        <div class="row g-2">
+                            <div class="col-auto">
+                                <label class="form-label small" th:text="#{admin.variants.grader}">Företag</label>
+                                <select name="grader" class="form-select form-select-sm">
+                                    <option value="PSA">PSA</option>
+                                    <option value="BGS">BGS</option>
+                                    <option value="CGC">CGC</option>
+                                    <option value="TAG">TAG</option>
+                                    <option value="OTHER" th:text="#{admin.variants.graderOther}">Annat</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-label small" th:text="#{admin.variants.grade}">Grade</label>
+                                <input type="text" name="grade" class="form-control form-control-sm"
+                                       style="width: 90px" placeholder="10">
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-label small" th:text="#{admin.variants.cert}">Cert-nummer</label>
+                                <input type="text" name="certNumber" class="form-control form-control-sm">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <label class="form-label small" th:text="#{product.price} + ' (kr)'">Pris (kr)</label>
+                        <input type="text" name="price" class="form-control form-control-sm" style="width: 100px"
+                               required placeholder="45,00">
+                    </div>
+                    <div class="col-auto">
+                        <label class="form-label small" th:text="#{product.stock}">Lager</label>
+                        <input type="number" name="stockQty" class="form-control form-control-sm" style="width: 80px"
+                               value="1" min="0">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-sm btn-accent" th:text="#{admin.variants.add}">Lägg till</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <!-- Images -->
+            <div class="card border-0 shadow-sm p-3 mb-4" th:unless="${isNew}">
+                <h2 class="h6 text-uppercase text-muted" th:text="#{admin.images.title}">Bilder</h2>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <div th:each="img : ${product.images}" class="position-relative">
+                        <img th:src="@{'/uploads/' + ${img.path}}" alt=""
+                             style="width: 90px; height: 120px; object-fit: contain;" class="bg-light rounded border">
+                        <form th:action="@{'/admin/products/images/' + ${img.id} + '/delete'}" method="post"
+                              class="position-absolute top-0 end-0">
+                            <button type="submit" class="btn btn-sm btn-danger py-0 px-1" title="Ta bort">×</button>
+                        </form>
+                    </div>
+                    <p class="text-muted small mb-0" th:if="${product.images.isEmpty()}"
+                       th:text="#{product.noImage}">Ingen bild</p>
+                </div>
+                <form th:action="@{'/admin/products/' + ${product.id} + '/images'}" method="post"
+                      enctype="multipart/form-data" class="d-flex gap-2">
+                    <input type="file" name="files" class="form-control form-control-sm" multiple
+                           accept=".jpg,.jpeg,.png">
+                    <button type="submit" class="btn btn-sm btn-accent text-nowrap"
+                            th:text="#{admin.images.upload}">Ladda upp</button>
+                </form>
+                <div class="form-text" th:text="#{admin.images.hint}">JPG/PNG, max 5 MB per bild.</div>
+            </div>
+
+            <!-- Danger zone -->
+            <div class="card border-0 shadow-sm p-3" th:unless="${isNew}">
+                <h2 class="h6 text-uppercase text-muted" th:text="#{admin.dangerZone}">Farozon</h2>
+                <form th:action="@{'/admin/products/' + ${product.id} + '/delete'}" method="post"
+                      onsubmit="return confirm(this.dataset.msg)" th:data-msg="#{admin.products.confirmDelete}">
+                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                            th:text="#{admin.products.delete}">Ta bort produkten permanent</button>
+                </form>
+                <div class="form-text" th:text="#{admin.products.deleteHint}">
+                    Tips: avmarkera ”Synlig i butiken” om du bara vill dölja den.
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

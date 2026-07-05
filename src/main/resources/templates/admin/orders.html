@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="#{admin.nav.orders} + ' – Admin'">Ordrar</title>
+</head>
+<body>
+<main>
+    <h1 class="h4 mb-3" th:text="#{admin.nav.orders}">Ordrar</h1>
+
+    <div class="d-flex gap-2 mb-3 flex-wrap">
+        <a class="btn btn-sm" th:classappend="${statusFilter == null} ? 'btn-accent' : 'btn-outline-secondary'"
+           th:href="@{/admin/orders}" th:text="#{admin.orders.all}">Alla</a>
+        <a th:each="s : ${allStatuses}" class="btn btn-sm"
+           th:classappend="${statusFilter == s} ? 'btn-accent' : 'btn-outline-secondary'"
+           th:href="@{/admin/orders(status=${s})}" th:text="#{'order.status.' + ${s}}">Status</a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="small text-muted">
+                <tr>
+                    <th th:text="#{order.number}">Ordernummer</th>
+                    <th th:text="#{admin.orders.date}">Datum</th>
+                    <th th:text="#{checkout.name}">Kund</th>
+                    <th class="text-end" th:text="#{cart.total}">Summa</th>
+                    <th th:text="#{order.status}">Status</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="o : ${orders.content}">
+                    <td><a class="fw-semibold text-decoration-none" th:href="@{'/admin/orders/' + ${o.id}}"
+                           th:text="${o.orderNumber}">2026-0001</a></td>
+                    <td class="small text-muted" th:text="${@fmt.dateTime(o.createdAt)}">2026-07-05 14:00</td>
+                    <td>
+                        <span th:text="${o.customerName}">Kund</span>
+                        <div class="small text-muted" th:text="${o.email}">mail</div>
+                    </td>
+                    <td class="text-end" th:text="${@fmt.currency(o.totalMinor, o.currency)}">204 kr</td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${o.status.name() == 'PAID'} ? 'bg-success'
+                                            : (${o.status.name() == 'PENDING'} ? 'bg-warning text-dark'
+                                            : (${o.status.name() == 'SHIPPED'} ? 'bg-info text-dark' : 'bg-secondary'))"
+                              th:text="#{'order.status.' + ${o.status}}">Betald</span>
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" th:href="@{'/admin/orders/' + ${o.id}}"
+                           th:text="#{admin.orders.view}">Öppna</a>
+                    </td>
+                </tr>
+                <tr th:if="${orders.isEmpty()}">
+                    <td colspan="6" class="text-center text-muted py-4" th:text="#{admin.dash.noOrders}">Inga ordrar.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <nav th:if="${orders.totalPages > 1}" class="d-flex justify-content-center align-items-center gap-3 mt-3">
+        <a class="btn btn-sm btn-outline-secondary" th:classappend="${orders.first} ? 'disabled'"
+           th:href="@{/admin/orders(status=${statusFilter}, page=${orders.number - 1})}" th:text="#{page.prev}">Föregående</a>
+        <span class="small text-muted" th:text="#{page.of(${orders.number + 1}, ${orders.totalPages})}">1/2</span>
+        <a class="btn btn-sm btn-outline-secondary" th:classappend="${orders.last} ? 'disabled'"
+           th:href="@{/admin/orders(status=${statusFilter}, page=${orders.number + 1})}" th:text="#{page.next}">Nästa</a>
+    </nav>
+</main>
+</body>
+</html>

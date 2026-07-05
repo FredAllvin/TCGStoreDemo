@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="#{admin.nav.dashboard} + ' – Admin'">Översikt</title>
+</head>
+<body>
+<main>
+    <h1 class="h4 mb-4" th:text="#{admin.nav.dashboard}">Översikt</h1>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm p-3">
+                <div class="small text-muted" th:text="#{admin.dash.pending}">Väntar på betalning</div>
+                <div class="h3 mb-0" th:text="${pendingCount}">0</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm p-3">
+                <div class="small text-muted" th:text="#{admin.dash.toShip}">Att skicka</div>
+                <div class="h3 mb-0 text-accent" th:text="${paidCount}">2</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm p-3">
+                <div class="small text-muted" th:text="#{admin.dash.revenue30}">Försäljning 30 dagar</div>
+                <div class="h3 mb-0" th:text="${@fmt.money(revenue30)}">0 kr</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm p-3">
+                <div class="small text-muted" th:text="#{admin.dash.products}">Produkter</div>
+                <div class="h3 mb-0" th:text="${productCount}">34</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm p-3">
+                <h2 class="h6 text-uppercase text-muted" th:text="#{admin.dash.recentOrders}">Senaste ordrar</h2>
+                <p class="text-muted small mb-0" th:if="${recentOrders.isEmpty()}"
+                   th:text="#{admin.dash.noOrders}">Inga ordrar ännu.</p>
+                <table class="table table-sm align-middle mb-0" th:unless="${recentOrders.isEmpty()}">
+                    <tbody>
+                    <tr th:each="o : ${recentOrders}">
+                        <td><a th:href="@{'/admin/orders/' + ${o.id}}" th:text="${o.orderNumber}">2026-0001</a></td>
+                        <td class="small text-muted" th:text="${@fmt.dateTime(o.createdAt)}">2026-07-05</td>
+                        <td class="small" th:text="${o.customerName}">Kund</td>
+                        <td class="text-end" th:text="${@fmt.currency(o.totalMinor, o.currency)}">204 kr</td>
+                        <td class="text-end">
+                            <span class="badge"
+                                  th:classappend="${o.status.name() == 'PAID'} ? 'bg-success'
+                                                : (${o.status.name() == 'PENDING'} ? 'bg-warning text-dark'
+                                                : (${o.status.name() == 'SHIPPED'} ? 'bg-info text-dark' : 'bg-secondary'))"
+                                  th:text="#{'order.status.' + ${o.status}}">Betald</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm p-3">
+                <h2 class="h6 text-uppercase text-muted" th:text="#{admin.dash.lowStock}">Lågt lager (sealed/tillbehör)</h2>
+                <p class="text-muted small mb-0" th:if="${lowStock.isEmpty()}"
+                   th:text="#{admin.dash.noLowStock}">Inget lågt lager.</p>
+                <table class="table table-sm align-middle mb-0" th:unless="${lowStock.isEmpty()}">
+                    <tbody>
+                    <tr th:each="v : ${lowStock}">
+                        <td>
+                            <a th:href="@{'/admin/products/' + ${v.product.id} + '/edit'}"
+                               th:text="${v.product.name}">Produkt</a>
+                        </td>
+                        <td class="text-end">
+                            <span class="badge" th:classappend="${v.stockQty == 0} ? 'bg-danger' : 'bg-warning text-dark'"
+                                  th:text="${v.stockQty} + ' st'">1 st</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

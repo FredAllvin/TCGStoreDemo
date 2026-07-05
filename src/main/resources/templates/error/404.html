@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="#{error.404.title}">Sidan hittades inte</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+</head>
+<body class="d-flex align-items-center justify-content-center bg-light" style="min-height: 100vh">
+<div class="text-center p-4">
+    <div class="display-1 fw-bold text-muted">404</div>
+    <h1 class="h4" th:text="#{error.404.title}">Sidan hittades inte</h1>
+    <p class="text-muted" th:text="#{error.404.text}">Sidan du söker finns inte.</p>
+    <a class="btn btn-accent" th:href="@{/}" th:text="#{error.backHome}">Till startsidan</a>
+</div>
+</body>
+</html>

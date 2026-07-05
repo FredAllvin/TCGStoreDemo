@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="${order.orderNumber} + ' – Admin'">Order</title>
+</head>
+<body>
+<main>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h4 mb-0">
+            <a th:href="@{/admin/orders}" class="text-decoration-none text-muted">←</a>
+            <span th:text="${order.orderNumber}">2026-0001</span>
+            <span class="badge ms-2"
+                  th:classappend="${order.status.name() == 'PAID'} ? 'bg-success'
+                                : (${order.status.name() == 'PENDING'} ? 'bg-warning text-dark'
+                                : (${order.status.name() == 'SHIPPED'} ? 'bg-info text-dark' : 'bg-secondary'))"
+                  th:text="#{'order.status.' + ${order.status}}">Betald</span>
+        </h1>
+        <div class="d-flex gap-2">
+            <form th:if="${order.status.name() == 'PENDING'}"
+                  th:action="@{'/admin/orders/' + ${order.id} + '/paid'}" method="post">
+                <button class="btn btn-success btn-sm" type="submit"
+                        th:text="#{admin.orders.markPaid}">Markera betald</button>
+            </form>
+            <form th:if="${order.status.name() == 'PAID'}"
+                  th:action="@{'/admin/orders/' + ${order.id} + '/shipped'}" method="post">
+                <button class="btn btn-accent btn-sm" type="submit"
+                        th:text="#{admin.orders.markShipped}">Markera skickad</button>
+            </form>
+            <form th:if="${order.status.name() == 'PENDING' || order.status.name() == 'PAID'}"
+                  th:action="@{'/admin/orders/' + ${order.id} + '/cancel'}" method="post"
+                  onsubmit="return confirm(this.dataset.msg)" th:data-msg="#{admin.orders.confirmCancel}">
+                <button class="btn btn-outline-danger btn-sm" type="submit"
+                        th:text="#{admin.orders.cancel}">Avbryt & återför lager</button>
+            </form>
+        </div>
+    </div>
+
+    <p class="small text-muted" th:if="${order.status.name() == 'PAID'}"
+       th:text="#{admin.orders.refundHint}">Vid avbokning av betald order: återbetala manuellt via betalleverantören.</p>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm p-3 mb-3">
+                <h2 class="h6 text-uppercase text-muted" th:text="#{order.items}">Produkter</h2>
+                <table class="table table-sm align-middle mb-2">
+                    <tbody>
+                    <tr th:each="line : ${order.lines}">
+                        <td>
+                            <span th:text="${line.productName}">Kort</span>
+                            <div class="small text-muted" th:if="${!line.variantLabel.isEmpty()}"
+                                 th:text="${line.variantLabel}">NM</div>
+                        </td>
+                        <td class="text-nowrap small"
+                            th:text="${line.qty} + ' × ' + ${@fmt.currency(line.unitPriceMinor, order.currency)}">2 × 15 kr</td>
+                        <td class="text-end fw-semibold"
+                            th:text="${@fmt.currency(line.lineTotalMinor, order.currency)}">30 kr</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-between small">
+                    <span th:text="#{cart.subtotal}">Delsumma</span>
+                    <span th:text="${@fmt.currency(order.subtotalMinor, order.currency)}">30 kr</span>
+                </div>
+                <div class="d-flex justify-content-between small">
+                    <span th:text="#{order.shippingMethod} + ' (' + ${order.shippingName} + ')'">Frakt</span>
+                    <span th:text="${@fmt.currency(order.shippingMinor, order.currency)}">29 kr</span>
+                </div>
+                <hr class="my-2">
+                <div class="d-flex justify-content-between fw-bold">
+                    <span th:text="#{cart.total}">Summa</span>
+                    <span th:text="${@fmt.currency(order.totalMinor, order.currency)}">59 kr</span>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm p-3">
+                <h2 class="h6 text-uppercase text-muted" th:text="#{admin.orders.payment}">Betalning</h2>
+                <table class="table table-sm small mb-0">
+                    <tbody>
+                    <tr>
+                        <th class="fw-normal text-muted" th:text="#{admin.orders.provider}">Leverantör</th>
+                        <td th:text="${order.paymentProvider ?: '–'}">mock</td>
+                    </tr>
+                    <tr>
+                        <th class="fw-normal text-muted" th:text="#{admin.orders.paymentRef}">Referens</th>
+                        <td th:text="${order.paymentRef ?: '–'}">MOCK-123</td>
+                    </tr>
+                    <tr>
+                        <th class="fw-normal text-muted" th:text="#{admin.orders.created}">Skapad</th>
+                        <td th:text="${@fmt.dateTime(order.createdAt)}">2026-07-05</td>
+                    </tr>
+                    <tr th:if="${order.paidAt != null}">
+                        <th class="fw-normal text-muted" th:text="#{order.status.PAID}">Betald</th>
+                        <td th:text="${@fmt.dateTime(order.paidAt)}">2026-07-05</td>
+                    </tr>
+                    <tr th:if="${order.shippedAt != null}">
+                        <th class="fw-normal text-muted" th:text="#{order.status.SHIPPED}">Skickad</th>
+                        <td th:text="${@fmt.dateTime(order.shippedAt)}">2026-07-06</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm p-3">
+                <h2 class="h6 text-uppercase text-muted" th:text="#{checkout.contact}">Kund</h2>
+                <div class="small">
+                    <div class="fw-semibold" th:text="${order.customerName}">Namn</div>
+                    <div><a th:href="'mailto:' + ${order.email}" th:text="${order.email}">mail</a></div>
+                    <div th:if="${order.phone != null}" th:text="${order.phone}">070…</div>
+                    <hr class="my-2">
+                    <div th:text="${order.addressLine1}">Adress</div>
+                    <div th:if="${order.addressLine2 != null}" th:text="${order.addressLine2}"></div>
+                    <div th:text="${order.postalCode} + ' ' + ${order.city}">123 45 Stad</div>
+                    <div th:text="${order.country}">Sverige</div>
+                    <div th:if="${order.customerNote != null}" class="mt-2">
+                        <span class="text-muted" th:text="#{checkout.note}">Meddelande</span>:
+                        <em th:text="${order.customerNote}">…</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

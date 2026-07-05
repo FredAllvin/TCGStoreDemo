@@ -61,6 +61,18 @@ public class FormatService {
 		return instant == null ? "" : DATE_TIME.format(instant);
 	}
 
+	/** Minor units → plain decimal string for admin form inputs, e.g. 4500 → "45.00". */
+	public String decimal(long minor) {
+		return BigDecimal.valueOf(minor).movePointLeft(2).toPlainString();
+	}
+
+	/** Parses an admin price input like "45", "45.50" or "45,50" into minor units. */
+	public static long parseMinor(String amount) {
+		return new BigDecimal(amount.trim().replace(',', '.').replace(" ", ""))
+				.movePointRight(2)
+				.longValueExact();
+	}
+
 	public String date(Instant instant) {
 		return instant == null ? "" : DATE.format(instant);
 	}

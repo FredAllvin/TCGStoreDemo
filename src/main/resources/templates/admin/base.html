@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)" lang="sv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title th:replace="${title}">Admin</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <style th:inline="text">
+        :root {
+            --brand: [[${settings.primaryColor}]];
+            --accent: [[${settings.accentColor}]];
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="d-flex flex-column flex-lg-row" style="min-height: 100vh">
+    <aside class="admin-sidebar text-white p-3 d-flex flex-column" style="min-width: 230px;">
+        <a th:href="@{/admin}" class="text-white text-decoration-none mb-3">
+            <div class="fw-bold" th:text="${settings.storeName}">Butik</div>
+            <div class="small text-white-50">Admin</div>
+        </a>
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link px-2 py-1" th:href="@{/admin}"
+               th:classappend="${currentPath == '/admin'} ? 'active'" th:text="#{admin.nav.dashboard}">Översikt</a>
+            <a class="nav-link px-2 py-1" th:href="@{/admin/products}"
+               th:classappend="${#strings.startsWith(currentPath, '/admin/products')} ? 'active'"
+               th:text="#{admin.nav.products}">Produkter</a>
+            <a class="nav-link px-2 py-1" th:href="@{/admin/categories}"
+               th:classappend="${#strings.startsWith(currentPath, '/admin/categories')} ? 'active'"
+               th:text="#{admin.nav.categories}">Kategorier</a>
+            <a class="nav-link px-2 py-1" th:href="@{/admin/orders}"
+               th:classappend="${#strings.startsWith(currentPath, '/admin/orders')} ? 'active'"
+               th:text="#{admin.nav.orders}">Ordrar</a>
+            <a class="nav-link px-2 py-1" th:href="@{/admin/settings}"
+               th:classappend="${#strings.startsWith(currentPath, '/admin/settings')} ? 'active'"
+               th:text="#{admin.nav.settings}">Inställningar</a>
+            <a class="nav-link px-2 py-1" th:href="@{/admin/password}"
+               th:classappend="${#strings.startsWith(currentPath, '/admin/password')} ? 'active'"
+               th:text="#{admin.nav.password}">Lösenord</a>
+        </nav>
+        <hr class="border-secondary">
+        <a class="nav-link px-2 py-1 text-white-50" th:href="@{/}" target="_blank"
+           th:text="#{admin.nav.viewStore}">Visa butiken ↗</a>
+        <form th:action="@{/admin/logout}" method="post" class="mt-auto pt-3">
+            <button type="submit" class="btn btn-sm btn-outline-light w-100" th:text="#{admin.nav.logout}">Logga ut</button>
+        </form>
+    </aside>
+
+    <div class="flex-grow-1 p-3 p-lg-4">
+        <div th:if="${flashSuccessKey != null}" class="alert alert-success"
+             th:text="${#messages.msg(flashSuccessKey)}">OK</div>
+        <div th:if="${flashErrorKey != null}" class="alert alert-warning"
+             th:text="${#messages.msg(flashErrorKey)}">Fel</div>
+
+        <main th:replace="${content}">Innehåll</main>
+    </div>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -136,132 +136,166 @@ public class DemoDataSeeder implements ApplicationRunner {
 
 		// --- Pokémon singles ---
 		Product p = single(pokemonSingles, "Pikachu ex", "Surging Sparks", "057/191", "Double Rare", "EN",
-				"Populärt samlarkort i toppskick, direkt från display.", true, POKEMON);
+				"Populärt samlarkort i toppskick, direkt från display.",
+				"Popular collector card in top condition, straight from a display.", true, POKEMON);
 		raw(p, Condition.NM, Finish.NONFOIL, 4_500, 2);
 		raw(p, Condition.LP, Finish.NONFOIL, 3_500, 1);
 
 		p = single(pokemonSingles, "Charizard ex", "Obsidian Flames", "125/197", "Special Illustration Rare", "EN",
-				"Eftertraktat Charizard-kort. Grade-kandidat i NM.", true, POKEMON);
+				"Eftertraktat Charizard-kort. Grade-kandidat i NM.",
+				"Sought-after Charizard card. Grading candidate in NM.", true, POKEMON);
 		raw(p, Condition.NM, Finish.NONFOIL, 89_500, 1);
 		raw(p, Condition.MP, Finish.NONFOIL, 62_000, 1);
 		graded(p, Grader.PSA, "9", "82634511", 189_500);
 
 		p = single(pokemonSingles, "Gardevoir ex", "Scarlet & Violet", "086/198", "Double Rare", "EN",
-				"Meta-kort för turneringsspelare.", false, POKEMON);
+				"Meta-kort för turneringsspelare.",
+				"Meta card for tournament players.", false, POKEMON);
 		raw(p, Condition.NM, Finish.NONFOIL, 12_500, 3);
 		raw(p, Condition.LP, Finish.NONFOIL, 9_500, 2);
 
 		p = single(pokemonSingles, "Umbreon VMAX (Alt Art)", "Evolving Skies", "215/203", "Alternate Art Secret", "EN",
-				"En av seriens mest eftertraktade alt arts – gradad PSA 10.", true, POKEMON);
+				"En av seriens mest eftertraktade alt arts – gradad PSA 10.",
+				"One of the set's most sought-after alt arts – graded PSA 10.", true, POKEMON);
 		graded(p, Grader.PSA, "10", "71034982", 2_495_000);
 
 		p = single(pokemonSingles, "Iono (Full Art)", "Paldea Evolved", "185/193", "Ultra Rare", "EN",
-				"Populär trainer i full art.", false, POKEMON);
+				"Populär trainer i full art.",
+				"Popular trainer in full art.", false, POKEMON);
 		raw(p, Condition.NM, Finish.NONFOIL, 8_900, 2);
 
 		p = single(pokemonSingles, "Snorlax", "151", "143/165", "Rare", "EN",
-				"Klassiker ur 151-serien.", false, POKEMON);
+				"Klassiker ur 151-serien.",
+				"A classic from the 151 set.", false, POKEMON);
 		raw(p, Condition.NM, Finish.NONFOIL, 1_500, 8);
 		raw(p, Condition.NM, Finish.REVERSE, 2_500, 3);
 
 		// --- Pokémon sealed ---
 		sealed(pokemonSealed, "Surging Sparks Booster Box (36-pack)", "Surging Sparks", "EN",
-				"Obruten booster box, 36 paket.", true, 549_500, 3, POKEMON);
+				"Obruten booster box, 36 paket.",
+				"Unopened booster box, 36 packs.", true, 549_500, 3, POKEMON);
 		sealed(pokemonSealed, "Prismatic Evolutions Elite Trainer Box", "Prismatic Evolutions", "EN",
-				"ETB med 9 paket och tillbehör.", false, 129_500, 5, POKEMON);
+				"ETB med 9 paket och tillbehör.",
+				"ETB with 9 packs and accessories.", false, 129_500, 5, POKEMON);
 		sealed(pokemonSealed, "151 Booster Bundle", "151", "EN",
-				"6 paket ur den populära 151-serien.", false, 64_900, 7, POKEMON);
+				"6 paket ur den populära 151-serien.",
+				"6 packs from the popular 151 set.", false, 64_900, 7, POKEMON);
 		sealed(pokemonSealed, "Paldea Evolved Booster (löspaket)", "Paldea Evolved", "EN",
-				"Enskilt boosterpaket.", false, 5_900, 40, POKEMON);
+				"Enskilt boosterpaket.",
+				"Single booster pack.", false, 5_900, 40, POKEMON);
 
 		// --- Magic singles ---
 		p = single(magicSingles, "Ragavan, Nimble Pilferer", "Modern Horizons 2", "138", "Mythic", "EN",
-				"Modern-staple. Även gradad BGS 9.5 i lager.", true, MAGIC);
+				"Modern-staple. Även gradad BGS 9.5 i lager.",
+				"Modern staple. Graded BGS 9.5 also in stock.", true, MAGIC);
 		raw(p, Condition.NM, Finish.NONFOIL, 79_500, 2);
 		raw(p, Condition.LP, Finish.NONFOIL, 65_000, 1);
 		graded(p, Grader.BGS, "9.5", "0012345678", 165_000);
 
 		p = single(magicSingles, "Counterspell", "Commander Masters", "081", "Uncommon", "EN",
-				"Klassisk counter – hörnsten i varje blå lek.", false, MAGIC);
+				"Klassisk counter – hörnsten i varje blå lek.",
+				"The classic counter – a cornerstone of every blue deck.", false, MAGIC);
 		raw(p, Condition.NM, Finish.NONFOIL, 2_500, 12);
 
 		p = single(magicSingles, "The One Ring", "The Lord of the Rings: Tales of Middle-earth", "246", "Mythic", "EN",
-				"En ring att styra dem alla.", true, MAGIC);
+				"En ring att styra dem alla.",
+				"One ring to rule them all.", true, MAGIC);
 		raw(p, Condition.NM, Finish.NONFOIL, 189_500, 1);
 
 		p = single(magicSingles, "Sol Ring", "Commander 2021", "263", "Uncommon", "EN",
-				"Commander-staple nummer ett.", false, MAGIC);
+				"Commander-staple nummer ett.",
+				"The number one Commander staple.", false, MAGIC);
 		raw(p, Condition.NM, Finish.NONFOIL, 1_900, 20);
 		raw(p, Condition.LP, Finish.NONFOIL, 1_200, 6);
 
 		p = single(magicSingles, "Wrenn and Six", "Modern Horizons", "217", "Mythic", "EN",
-				"Kraftfull planeswalker för Modern.", false, MAGIC);
+				"Kraftfull planeswalker för Modern.",
+				"Powerful planeswalker for Modern.", false, MAGIC);
 		raw(p, Condition.NM, Finish.NONFOIL, 45_000, 2);
 		raw(p, Condition.MP, Finish.NONFOIL, 32_000, 1);
 
 		// --- Magic sealed ---
 		sealed(magicSealed, "Bloomburrow Play Booster Box", "Bloomburrow", "EN",
+				"36 play boosters.",
 				"36 play boosters.", false, 449_500, 4, MAGIC);
 		sealed(magicSealed, "Modern Horizons 3 Collector Booster", "Modern Horizons 3", "EN",
-				"Enskild collector booster.", false, 89_500, 6, MAGIC);
+				"Enskild collector booster.",
+				"Single collector booster.", false, 89_500, 6, MAGIC);
 		sealed(magicSealed, "Duskmourn Bundle", "Duskmourn: House of Horror", "EN",
-				"9 paket + tillbehör.", false, 54_900, 5, MAGIC);
+				"9 paket + tillbehör.",
+				"9 packs + accessories.", false, 54_900, 5, MAGIC);
 
 		// --- Yu-Gi-Oh! singles ---
 		p = single(yugiohSingles, "Blue-Eyes White Dragon", "Legend of Blue Eyes White Dragon", "LOB-001", "Ultra Rare", "EN",
-				"Ikonen. 1st edition-marknadens kung – LP eller gradad PSA 8.", true, YUGIOH);
+				"Ikonen. 1st edition-marknadens kung – LP eller gradad PSA 8.",
+				"The icon. King of the 1st edition market – LP or graded PSA 8.", true, YUGIOH);
 		raw(p, Condition.LP, Finish.NONFOIL, 350_000, 1);
 		graded(p, Grader.PSA, "8", "45120963", 890_000);
 
 		p = single(yugiohSingles, "Ash Blossom & Joyous Spring", "Rarity Collection", "RA01-EN008", "Secret Rare", "EN",
-				"Handtrap-staple i varje meta-lek.", false, YUGIOH);
+				"Handtrap-staple i varje meta-lek.",
+				"Hand trap staple in every meta deck.", false, YUGIOH);
 		raw(p, Condition.NM, Finish.NONFOIL, 15_900, 3);
 
 		p = single(yugiohSingles, "Snake-Eye Ash", "Phantom Nightmare", "PHNI-EN005", "Secret Rare", "EN",
-				"Nyckelkort i Snake-Eye-strategin.", false, YUGIOH);
+				"Nyckelkort i Snake-Eye-strategin.",
+				"Key card in the Snake-Eye strategy.", false, YUGIOH);
 		raw(p, Condition.NM, Finish.NONFOIL, 8_900, 4);
 
 		p = single(yugiohSingles, "Nibiru, the Primal Being", "Rarity Collection II", "RA02-EN012", "Ultimate Rare", "EN",
-				"Board breaker som vinner matcher.", false, YUGIOH);
+				"Board breaker som vinner matcher.",
+				"A board breaker that wins games.", false, YUGIOH);
 		raw(p, Condition.NM, Finish.NONFOIL, 12_500, 2);
 
 		// --- Yu-Gi-Oh! sealed ---
 		sealed(yugiohSealed, "Rarity Collection II Booster Box", "Rarity Collection II", "EN",
-				"24 paket fyllda med staples.", false, 189_500, 3, YUGIOH);
+				"24 paket fyllda med staples.",
+				"24 packs full of staples.", false, 189_500, 3, YUGIOH);
 		sealed(yugiohSealed, "Legacy of Destruction Booster", "Legacy of Destruction", "EN",
-				"Enskilt boosterpaket.", false, 4_500, 30, YUGIOH);
+				"Enskilt boosterpaket.",
+				"Single booster pack.", false, 4_500, 30, YUGIOH);
 
 		// --- One Piece singles ---
 		p = single(onePieceSingles, "Monkey.D.Luffy (Leader)", "Awakening of the New Era", "OP05-060", "Leader", "EN",
-				"Populär leader ur OP05.", true, ONEPIECE);
+				"Populär leader ur OP05.",
+				"Popular leader from OP05.", true, ONEPIECE);
 		raw(p, Condition.NM, Finish.NONFOIL, 25_000, 2);
 
 		p = single(onePieceSingles, "Shanks", "Romance Dawn", "OP01-120", "Secret Rare", "EN",
-				"Chase-kortet ur OP01. Även gradad CGC 9.5.", false, ONEPIECE);
+				"Chase-kortet ur OP01. Även gradad CGC 9.5.",
+				"The chase card of OP01. Graded CGC 9.5 also in stock.", false, ONEPIECE);
 		raw(p, Condition.NM, Finish.NONFOIL, 89_500, 1);
 		graded(p, Grader.CGC, "9.5", "4067812", 195_000);
 
 		p = single(onePieceSingles, "Nami (Alt Art)", "Pillars of Strength", "OP03-040", "Super Rare", "EN",
-				"Eftertraktad alt art.", false, ONEPIECE);
+				"Eftertraktad alt art.",
+				"Sought-after alt art.", false, ONEPIECE);
 		raw(p, Condition.NM, Finish.NONFOIL, 45_000, 1);
 
 		// --- One Piece sealed ---
 		sealed(onePieceSealed, "OP-09 Booster Box (JP)", "The Four Emperors", "JP",
-				"Japansk booster box, 24 paket.", false, 99_500, 8, ONEPIECE);
+				"Japansk booster box, 24 paket.",
+				"Japanese booster box, 24 packs.", false, 99_500, 8, ONEPIECE);
 		sealed(onePieceSealed, "Starter Deck: 3D2Y", "3D2Y", "EN",
-				"Komplett startlek.", false, 19_900, 6, ONEPIECE);
+				"Komplett startlek.",
+				"Complete starter deck.", false, 19_900, 6, ONEPIECE);
 
 		// --- Accessories ---
 		accessory(accessories, "Dragon Shield Matte – Midnight Blue (100)",
-				"100 sleeves i standardstorlek.", 12_900, 25);
+				"100 sleeves i standardstorlek.",
+				"100 standard-size sleeves.", 12_900, 25);
 		accessory(accessories, "Ultra Pro Toploader 3\"x4\" (25-pack)",
-				"Skydda dina dyraste kort.", 4_900, 40);
+				"Skydda dina dyraste kort.",
+				"Protect your most valuable cards.", 4_900, 40);
 		accessory(accessories, "Samlarpärm 9-pocket (360 kort)",
-				"Sidladdad pärm med dragkedja.", 24_900, 10);
+				"Sidladdad pärm med dragkedja.",
+				"Side-loading binder with zipper.", 24_900, 10);
 		accessory(accessories, "Spelmatta – svart neutral",
-				"Slitstark spelmatta 61×35 cm.", 19_900, 15);
+				"Slitstark spelmatta 61×35 cm.",
+				"Durable playmat, 61×35 cm.", 19_900, 15);
 		accessory(accessories, "Deck Box – röd (100+)",
-				"Rymmer 100 sleevade kort.", 3_900, 30);
+				"Rymmer 100 sleevade kort.",
+				"Holds 100 sleeved cards.", 3_900, 30);
 	}
 
 	// --- helpers ---
@@ -277,29 +311,31 @@ public class DemoDataSeeder implements ApplicationRunner {
 	}
 
 	private Product single(Category category, String name, String set, String number, String rarity, String language,
-			String description, boolean featured, Color color) {
-		Product product = baseProduct(category, name, set, number, rarity, language, description, featured);
+			String description, String descriptionEn, boolean featured, Color color) {
+		Product product = baseProduct(category, name, set, number, rarity, language, description, descriptionEn,
+				featured);
 		attachImage(product, name, set, color);
 		return products.save(product);
 	}
 
 	private void sealed(Category category, String name, String set, String language, String description,
-			boolean featured, long priceMinor, int stock, Color color) {
-		Product product = baseProduct(category, name, set, null, null, language, description, featured);
+			String descriptionEn, boolean featured, long priceMinor, int stock, Color color) {
+		Product product = baseProduct(category, name, set, null, null, language, description, descriptionEn, featured);
 		standard(product, priceMinor, stock);
 		attachImage(product, name, set, color);
 		products.save(product);
 	}
 
-	private void accessory(Category category, String name, String description, long priceMinor, int stock) {
-		Product product = baseProduct(category, name, null, null, null, null, description, false);
+	private void accessory(Category category, String name, String description, String descriptionEn, long priceMinor,
+			int stock) {
+		Product product = baseProduct(category, name, null, null, null, null, description, descriptionEn, false);
 		standard(product, priceMinor, stock);
 		attachImage(product, name, "Tillbehör", ACCESSORY);
 		products.save(product);
 	}
 
 	private Product baseProduct(Category category, String name, String set, String number, String rarity,
-			String language, String description, boolean featured) {
+			String language, String description, String descriptionEn, boolean featured) {
 		Product product = new Product();
 		product.setCategory(category);
 		product.setName(name);
@@ -308,6 +344,7 @@ public class DemoDataSeeder implements ApplicationRunner {
 		product.setRarity(rarity);
 		product.setLanguage(language);
 		product.setDescription(description);
+		product.setDescriptionEn(descriptionEn);
 		product.setFeatured(featured);
 		// spread creation times so "recently added" looks alive
 		product.setCreatedAt(Instant.now().minus(createdAtOffset++, ChronoUnit.HOURS));

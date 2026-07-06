@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 @Entity
 public class Product {
@@ -32,6 +33,7 @@ public class Product {
 	private String rarity;
 	private String language;
 	private String description;
+	private String descriptionEn;
 	private boolean active = true;
 	private boolean featured;
 	private Instant createdAt = Instant.now();
@@ -48,6 +50,14 @@ public class Product {
 
 	public String mainImagePath() {
 		return images.isEmpty() ? null : images.getFirst().getPath();
+	}
+
+	/** The description for the given locale, falling back to the other language. */
+	public String descriptionFor(Locale locale) {
+		boolean english = locale != null && "en".equals(locale.getLanguage());
+		String preferred = english ? descriptionEn : description;
+		String other = english ? description : descriptionEn;
+		return preferred == null || preferred.isBlank() ? other : preferred;
 	}
 
 	public List<ProductVariant> activeVariants() {
@@ -167,6 +177,14 @@ public class Product {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getDescriptionEn() {
+		return descriptionEn;
+	}
+
+	public void setDescriptionEn(String descriptionEn) {
+		this.descriptionEn = descriptionEn;
 	}
 
 	public boolean isActive() {

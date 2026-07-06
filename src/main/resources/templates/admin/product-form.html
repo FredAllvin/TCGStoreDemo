@@ -18,7 +18,8 @@
         <div class="col-lg-7">
             <!-- Product fields -->
             <div class="card border-0 shadow-sm p-3 mb-4">
-                <form th:action="${isNew} ? @{/admin/products} : @{'/admin/products/' + ${product.id}}" method="post">
+                <form th:action="${isNew} ? @{/admin/products} : @{'/admin/products/' + ${product.id}}" method="post"
+                      enctype="multipart/form-data">
                     <div class="row g-3">
                         <div class="col-md-8">
                             <label class="form-label" th:text="#{admin.products.name}">Namn</label>
@@ -54,9 +55,14 @@
                                    th:value="${product.language}" placeholder="EN / JP / SV">
                         </div>
                         <div class="col-12">
-                            <label class="form-label" th:text="#{product.description}">Beskrivning</label>
-                            <textarea name="description" class="form-control" rows="3"
+                            <label class="form-label" th:text="#{admin.products.descriptionSv}">Beskrivning (svenska)</label>
+                            <textarea name="description" class="form-control" rows="3" maxlength="4000"
                                       th:text="${product.description}"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" th:text="#{admin.products.descriptionEn}">Beskrivning (engelska)</label>
+                            <textarea name="descriptionEn" class="form-control" rows="3" maxlength="4000"
+                                      th:text="${product.descriptionEn}"></textarea>
                         </div>
                         <div class="col-12 d-flex gap-4">
                             <div class="form-check">
@@ -71,6 +77,12 @@
                                 <label class="form-check-label" for="active"
                                        th:text="#{admin.products.active}">Synlig i butiken</label>
                             </div>
+                        </div>
+                        <div class="col-12" th:if="${isNew}">
+                            <label class="form-label" th:text="#{admin.images.title}">Bilder</label>
+                            <input type="file" name="files" class="form-control" multiple
+                                   accept=".jpg,.jpeg,.png">
+                            <div class="form-text" th:text="#{admin.images.hint}">JPG/PNG, max 5 MB per bild.</div>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-accent mt-3" th:text="#{admin.save}">Spara</button>

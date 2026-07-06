@@ -70,10 +70,16 @@ public class AdminProductController {
 			@RequestParam(required = false) String setName, @RequestParam(required = false) String cardNumber,
 			@RequestParam(required = false) String rarity, @RequestParam(required = false) String language,
 			@RequestParam(required = false) String description,
+			@RequestParam(required = false) String descriptionEn,
 			@RequestParam(defaultValue = "false") boolean featured,
+			@RequestParam(required = false) List<MultipartFile> files,
 			RedirectAttributes redirect) {
 		if (name == null || name.isBlank()) {
 			redirect.addFlashAttribute("flashErrorKey", "admin.products.nameRequired");
+			return "redirect:/admin/products/new";
+		}
+		if (anyFieldTooLong(name, setName, cardNumber, rarity, language, description, descriptionEn)) {
+			redirect.addFlashAttribute("flashErrorKey", "admin.products.tooLong");
 			return "redirect:/admin/products/new";
 		}
 		Category category = categories.findById(categoryId).orElse(null);
@@ -82,9 +88,18 @@ public class AdminProductController {
 			return "redirect:/admin/products/new";
 		}
 		Product product = new Product();
-		applyFields(product, category, name, setName, cardNumber, rarity, language, description, featured, true);
+		applyFields(product, category, name, setName, cardNumber, rarity, language, description, descriptionEn,
+				featured, true);
 		Product saved = catalog.createProduct(product);
-		redirect.addFlashAttribute("flashSuccessKey", "admin.saved");
+		try {
+			if (files != null) {
+				catalog.addImages(saved.getId(), files);
+			}
+			redirect.addFlashAttribute("flashSuccessKey", "admin.saved");
+		}
+		catch (InvalidImageException e) {
+			redirect.addFlashAttribute("flashErrorKey", "admin.images.invalid");
+		}
 		return "redirect:/admin/products/" + saved.getId() + "/edit";
 	}
 
@@ -103,12 +118,18 @@ public class AdminProductController {
 			@RequestParam(required = false) String setName, @RequestParam(required = false) String cardNumber,
 			@RequestParam(required = false) String rarity, @RequestParam(required = false) String language,
 			@RequestParam(required = false) String description,
+			@RequestParam(required = false) String descriptionEn,
 			@RequestParam(defaultValue = "false") boolean featured,
 			@RequestParam(defaultValue = "false") boolean active,
 			RedirectAttributes redirect) {
+		if (anyFieldTooLong(name, setName, cardNumber, rarity, language, description, descriptionEn)) {
+			redirect.addFlashAttribute("flashErrorKey", "admin.products.tooLong");
+			return "redirect:/admin/products/" + id + "/edit";
+		}
 		Product product = products.findById(id).orElseThrow(NotFoundException::new);
 		Category category = categories.findById(categoryId).orElse(product.getCategory());
-		applyFields(product, category, name, setName, cardNumber, rarity, language, description, featured, active);
+		applyFields(product, category, name, setName, cardNumber, rarity, language, description, descriptionEn,
+				featured, active);
 		products.save(product);
 		redirect.addFlashAttribute("flashSuccessKey", "admin.saved");
 		return "redirect:/admin/products/" + id + "/edit";
@@ -218,7 +239,8 @@ public class AdminProductController {
 	}
 
 	private void applyFields(Product product, Category category, String name, String setName, String cardNumber,
-			String rarity, String language, String description, boolean featured, boolean active) {
+			String rarity, String language, String description, String descriptionEn, boolean featured,
+			boolean active) {
 		product.setCategory(category);
 		product.setName(name.trim());
 		product.setSetName(trimToNull(setName));
@@ -226,8 +248,21 @@ public class AdminProductController {
 		product.setRarity(trimToNull(rarity));
 		product.setLanguage(trimToNull(language));
 		product.setDescription(trimToNull(description));
+		product.setDescriptionEn(trimToNull(descriptionEn));
 		product.setFeatured(featured);
 		product.setActive(active);
+	}
+
+	// Same limits as the form's maxlength attributes and the database columns.
+	private static boolean anyFieldTooLong(String name, String setName, String cardNumber, String rarity,
+			String language, String description, String descriptionEn) {
+		return tooLong(name, 200) || tooLong(setName, 200) || tooLong(cardNumber, 50)
+				|| tooLong(rarity, 80) || tooLong(language, 40) || tooLong(description, 4000)
+				|| tooLong(descriptionEn, 4000);
+	}
+
+	private static boolean tooLong(String value, int max) {
+		return value != null && value.length() > max;
 	}
 
 	private static String trimToNull(String value) {

@@ -1,6 +1,10 @@
 HELP.md
 target/
 
+### Claude Code ###
+CLAUDE.md
+.claude/settings.local.json
+
 ### App runtime data & secrets ###
 data/
 .env

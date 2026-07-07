@@ -343,6 +343,7 @@ public class DemoDataSeeder implements ApplicationRunner {
 		product.setCardNumber(number);
 		product.setRarity(rarity);
 		product.setLanguage(language);
+		product.setTags(gameTags(category));
 		product.setDescription(description);
 		product.setDescriptionEn(descriptionEn);
 		product.setFeatured(featured);
@@ -356,6 +357,22 @@ public class DemoDataSeeder implements ApplicationRunner {
 		}
 		product.setSlug(slug);
 		return product;
+	}
+
+	/** Search tags from the root category, so e.g. "pokemon" finds Pokémon items despite the é. */
+	private static String gameTags(Category category) {
+		Category root = category;
+		while (root.getParent() != null) {
+			root = root.getParent();
+		}
+		return switch (root.getName()) {
+			case "Pokémon" -> "pokemon";
+			case "Magic: The Gathering" -> "magic, mtg";
+			case "Yu-Gi-Oh!" -> "yugioh, yu-gi-oh";
+			case "One Piece" -> "one piece";
+			case "Tillbehör" -> "tillbehor, accessories";
+			default -> null;
+		};
 	}
 
 	private void raw(Product product, Condition condition, Finish finish, long priceMinor, int stock) {

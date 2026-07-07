@@ -54,6 +54,12 @@
                             <input type="text" name="language" class="form-control" maxlength="40"
                                    th:value="${product.language}" placeholder="EN / JP / SV">
                         </div>
+                        <div class="col-md-8">
+                            <label class="form-label" th:text="#{admin.products.tags}">Sökord</label>
+                            <input type="text" name="tags" class="form-control" maxlength="200"
+                                   th:value="${product.tags}" placeholder="pokemon, vintage, holo">
+                            <div class="form-text" th:text="#{admin.products.tagsHint}">Kommaseparerade ord som produkten också hittas på i sökningen.</div>
+                        </div>
                         <div class="col-12">
                             <label class="form-label" th:text="#{admin.products.descriptionSv}">Beskrivning (svenska)</label>
                             <textarea name="description" class="form-control" rows="3" maxlength="4000"

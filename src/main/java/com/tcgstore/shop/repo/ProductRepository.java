@@ -38,6 +38,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 			where p.active = true and (
 			      lower(p.name) like lower(concat('%', :q, '%'))
 			   or lower(p.setName) like lower(concat('%', :q, '%'))
+			   or lower(p.tags) like lower(concat('%', :q, '%'))
 			   or lower(p.cardNumber) = lower(:q))
 			""")
 	Page<Product> search(@Param("q") String q, Pageable pageable);

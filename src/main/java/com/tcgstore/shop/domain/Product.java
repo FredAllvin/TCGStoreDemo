@@ -32,6 +32,7 @@ public class Product {
 	private String cardNumber;
 	private String rarity;
 	private String language;
+	private String tags;
 	private String description;
 	private String descriptionEn;
 	private boolean active = true;
@@ -169,6 +170,14 @@ public class Product {
 
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
 	}
 
 	public String getDescription() {

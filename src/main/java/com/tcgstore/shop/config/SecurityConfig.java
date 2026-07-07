@@ -19,6 +19,9 @@ public class SecurityConfig {
 	// because the templates use inline event handlers (delete confirmations, the
 	// gallery, the variant-kind toggle) and inline brand-colour <style> blocks;
 	// tightening it to nonces/hashes would mean refactoring those out first.
+	// form-action must allow checkout.stripe.com: Chrome applies it to the 302
+	// the checkout POST answers with, so 'self' alone strands the customer on
+	// the checkout page instead of Stripe's payment page.
 	private static final String CONTENT_SECURITY_POLICY = String.join("; ",
 			"default-src 'self'",
 			"script-src 'self' 'unsafe-inline'",
@@ -28,7 +31,7 @@ public class SecurityConfig {
 			"object-src 'none'",
 			"base-uri 'self'",
 			"frame-ancestors 'none'",
-			"form-action 'self'");
+			"form-action 'self' https://checkout.stripe.com");
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http, LoginAttemptService loginAttempts) throws Exception {

@@ -2,7 +2,16 @@
 
 encode gzip
 
-# HSTS – browsers will refuse plain http after the first visit
-header Strict-Transport-Security "max-age=31536000"
+# HSTS – browsers will refuse plain http after the first visit.
+# includeSubDomains + preload harden it further; drop "preload" if this
+# domain has subdomains that must stay reachable over plain http.
+header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 
-reverse_proxy app:8080
+reverse_proxy app:8080 {
+	# Security control: overwrite X-Forwarded-For with the real client IP
+	# instead of trusting/appending whatever the client sent. The app trusts
+	# this header (forward-headers-strategy: framework) to key its login
+	# brute-force throttle, so a spoofable value would let an attacker rotate
+	# fake IPs to evade the lockout — or lock out a legitimate admin's IP.
+	header_up X-Forwarded-For {remote_host}
+}

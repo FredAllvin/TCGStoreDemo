@@ -8,11 +8,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -28,6 +32,10 @@ public class ImageService {
 
 	private static final Logger log = LoggerFactory.getLogger(ImageService.class);
 	private static final long MAX_BYTES = 5L * 1024 * 1024;
+	// Pixel ceiling checked from the header *before* decoding, so a small but
+	// enormously-dimensioned file (a decompression bomb) cannot exhaust memory.
+	// Generous for real camera photos (~24–40 MP), fatal to a 30000×30000 bomb.
+	private static final long MAX_PIXELS = 40_000_000L;
 	private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png");
 	private static final int MAX_DIMENSION = 1400;
 
@@ -53,9 +61,20 @@ public class ImageService {
 			throw new InvalidImageException("bad-type");
 		}
 
+		byte[] bytes;
+		try {
+			bytes = file.getBytes();
+		}
+		catch (IOException e) {
+			throw new InvalidImageException("unreadable");
+		}
+		// Reject decompression bombs from the declared dimensions before we ever
+		// allocate a full BufferedImage for them.
+		ensureSaneDimensions(bytes);
+
 		BufferedImage image;
 		try {
-			image = ImageIO.read(file.getInputStream());
+			image = ImageIO.read(new ByteArrayInputStream(bytes));
 		}
 		catch (IOException e) {
 			throw new InvalidImageException("unreadable");
@@ -85,6 +104,37 @@ public class ImageService {
 			throw new InvalidImageException("store-failed");
 		}
 		return subdir + "/" + fileName;
+	}
+
+	/**
+	 * Reads only the image header to learn its declared width/height and rejects
+	 * anything above {@link #MAX_PIXELS}. Also doubles as content sniffing: bytes
+	 * with no matching {@link ImageReader} are not a real image.
+	 */
+	private void ensureSaneDimensions(byte[] bytes) {
+		try (ImageInputStream iis = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes))) {
+			if (iis == null) {
+				throw new InvalidImageException("bad-type");
+			}
+			Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+			if (!readers.hasNext()) {
+				throw new InvalidImageException("bad-type");
+			}
+			ImageReader reader = readers.next();
+			try {
+				reader.setInput(iis);
+				long pixels = (long) reader.getWidth(0) * reader.getHeight(0);
+				if (pixels > MAX_PIXELS) {
+					throw new InvalidImageException("too-large");
+				}
+			}
+			finally {
+				reader.dispose();
+			}
+		}
+		catch (IOException e) {
+			throw new InvalidImageException("unreadable");
+		}
 	}
 
 	public void delete(String relativePath) {

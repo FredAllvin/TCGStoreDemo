@@ -33,13 +33,27 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 			""")
 	Page<Product> findInStockByCategoryIdIn(@Param("categoryIds") Collection<Long> categoryIds, Pageable pageable);
 
-	/** @param pattern the LIKE pattern with wildcards escaped, see CatalogService.likePattern */
+	/**
+	 * Matches name, set, tags, card number, and the category tree the product
+	 * sits in (both languages) — so "magic" finds every card filed under
+	 * Magic: The Gathering. The parent join must stay a LEFT join: an implicit
+	 * path like p.category.parent.name would inner-join and silently drop all
+	 * products in root-level categories from the results.
+	 *
+	 * @param pattern the LIKE pattern with wildcards escaped, see CatalogService.likePattern
+	 */
 	@Query("""
 			select p from Product p
+			join p.category c
+			left join c.parent parent
 			where p.active = true and (
 			      lower(p.name) like lower(:pattern) escape '!'
 			   or lower(p.setName) like lower(:pattern) escape '!'
 			   or lower(p.tags) like lower(:pattern) escape '!'
+			   or lower(c.name) like lower(:pattern) escape '!'
+			   or lower(c.nameEn) like lower(:pattern) escape '!'
+			   or lower(parent.name) like lower(:pattern) escape '!'
+			   or lower(parent.nameEn) like lower(:pattern) escape '!'
 			   or lower(p.cardNumber) = lower(:q))
 			""")
 	Page<Product> search(@Param("q") String q, @Param("pattern") String pattern, Pageable pageable);

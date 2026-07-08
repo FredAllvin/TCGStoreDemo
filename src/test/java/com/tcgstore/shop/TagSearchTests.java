@@ -1,6 +1,7 @@
 package com.tcgstore.shop;
 
 import com.tcgstore.shop.domain.Category;
+import com.tcgstore.shop.domain.Product;
 import com.tcgstore.shop.repo.CategoryRepository;
 import com.tcgstore.shop.repo.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,6 +103,64 @@ class TagSearchTests {
 		mvc.perform(get("/search").param("q", "sol ring"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("Sol Ring")));
+	}
+
+	@Test
+	void productsAreFoundByTheirCategoryTree() throws Exception {
+		Category magic = new Category();
+		magic.setName("Magic: The Gathering");
+		magic.setSlug("magic-" + System.nanoTime());
+		magic = categories.save(magic);
+
+		Category singles = new Category();
+		singles.setName("Singles");
+		singles.setParent(magic);
+		singles.setSlug("magic-singles-" + System.nanoTime());
+		singles = categories.save(singles);
+
+		// nothing on the product itself contains "magic" — only the parent category does
+		Product counterspell = new Product();
+		counterspell.setCategory(singles);
+		counterspell.setName("Counterspell");
+		counterspell.setSetName("Commander Masters");
+		counterspell.setSlug("counterspell-" + System.nanoTime());
+		counterspell.setActive(true);
+		products.save(counterspell);
+
+		mvc.perform(get("/search").param("q", "magic"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("Counterspell")));
+		mvc.perform(get("/search").param("q", "singles"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("Counterspell")));
+		// products in root-level categories must survive the parent join
+		createProduct("Pikachu", null);
+		mvc.perform(get("/search").param("q", "pikachu"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("Pikachu")));
+	}
+
+	@Test
+	void categorySearchWorksInBothLanguages() throws Exception {
+		Category accessories = new Category();
+		accessories.setName("Tillbehör");
+		accessories.setNameEn("Accessories");
+		accessories.setSlug("tillbehor-" + System.nanoTime());
+		accessories = categories.save(accessories);
+
+		Product binder = new Product();
+		binder.setCategory(accessories);
+		binder.setName("Pärm 360");
+		binder.setSlug("parm-" + System.nanoTime());
+		binder.setActive(true);
+		products.save(binder);
+
+		mvc.perform(get("/search").param("q", "tillbehör"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("Pärm 360")));
+		mvc.perform(get("/search").param("q", "accessories"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("Pärm 360")));
 	}
 
 	@Test

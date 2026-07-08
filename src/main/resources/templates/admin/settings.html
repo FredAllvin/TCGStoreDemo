@@ -23,6 +23,11 @@
                             <input type="text" name="tagline" class="form-control" maxlength="200"
                                    th:value="${settings.tagline}">
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="#{admin.settings.taglineEn}">Slogan (engelska)</label>
+                            <input type="text" name="taglineEn" class="form-control" maxlength="200"
+                                   th:value="${settings.taglineEn}">
+                        </div>
                         <div class="col-md-3">
                             <label class="form-label" th:text="#{admin.settings.primaryColor}">Huvudfärg</label>
                             <input type="color" name="primaryColor" class="form-control form-control-color w-100"

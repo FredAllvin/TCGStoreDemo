@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:replace="${title}">Kortbutiken</title>
-    <meta name="description" th:if="${settings.tagline != null}" th:content="${settings.tagline}">
+    <meta name="description" th:if="${settings.taglineFor(#locale) != null}" th:content="${settings.taglineFor(#locale)}">
     <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/css/theme.css}">

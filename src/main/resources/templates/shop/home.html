@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
 <head>
-    <title th:text="${settings.storeName} + ' – ' + ${settings.tagline ?: ''}">Kortbutiken</title>
+    <title th:text="${settings.storeName} + ' – ' + ${settings.taglineFor(#locale) ?: ''}">Kortbutiken</title>
 </head>
 <body>
 <main class="flex-grow-1">
@@ -9,7 +9,7 @@
     <section class="hero text-white text-center py-5 mb-4">
         <div class="container py-3">
             <h1 class="display-5 fw-bold" th:text="${settings.storeName}">Kortbutiken</h1>
-            <p class="lead opacity-75 mb-4" th:text="${settings.tagline}">Singles, sealed &amp; tillbehör</p>
+            <p class="lead opacity-75 mb-4" th:text="${settings.taglineFor(#locale)}">Singles, sealed &amp; tillbehör</p>
             <a th:if="${!navCategories.isEmpty()}" class="btn btn-accent btn-lg px-4"
                th:href="@{'/c/' + ${navCategories[0].slug}}" th:text="#{home.shopNow}">Handla nu</a>
         </div>

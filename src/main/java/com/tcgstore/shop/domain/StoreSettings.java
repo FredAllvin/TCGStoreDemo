@@ -5,6 +5,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
 /** Singleton row (id = 1) holding all per-store branding and configuration. */
 @Entity
@@ -16,6 +17,7 @@ public class StoreSettings {
 
 	private String storeName;
 	private String tagline;
+	private String taglineEn;
 	private String logoPath;
 	private String primaryColor;
 	private String accentColor;
@@ -52,6 +54,22 @@ public class StoreSettings {
 
 	public void setTagline(String tagline) {
 		this.tagline = tagline;
+	}
+
+	public String getTaglineEn() {
+		return taglineEn;
+	}
+
+	public void setTaglineEn(String taglineEn) {
+		this.taglineEn = taglineEn;
+	}
+
+	/** The tagline for the given locale, falling back to the other language. */
+	public String taglineFor(Locale locale) {
+		boolean english = locale != null && "en".equals(locale.getLanguage());
+		String preferred = english ? taglineEn : tagline;
+		String other = english ? tagline : taglineEn;
+		return preferred == null || preferred.isBlank() ? other : preferred;
 	}
 
 	public String getLogoPath() {

@@ -43,6 +43,7 @@ public class AdminSettingsController {
 	@PostMapping
 	public String save(@RequestParam String storeName,
 			@RequestParam(required = false) String tagline,
+			@RequestParam(required = false) String taglineEn,
 			@RequestParam String primaryColor,
 			@RequestParam String accentColor,
 			@RequestParam String currency,
@@ -63,7 +64,7 @@ public class AdminSettingsController {
 			redirect.addFlashAttribute("flashErrorKey", "admin.settings.nameRequired");
 			return "redirect:/admin/settings";
 		}
-		if (tooLong(storeName, 120) || tooLong(tagline, 200) || tooLong(contactEmail, 200)
+		if (tooLong(storeName, 120) || tooLong(tagline, 200) || tooLong(taglineEn, 200) || tooLong(contactEmail, 200)
 				|| tooLong(contactPhone, 50) || tooLong(addressLine, 300) || tooLong(instagramUrl, 300)
 				|| tooLong(facebookUrl, 300) || tooLong(discordUrl, 300)) {
 			redirect.addFlashAttribute("flashErrorKey", "admin.settings.tooLong");
@@ -71,6 +72,7 @@ public class AdminSettingsController {
 		}
 		settings.setStoreName(storeName.trim());
 		settings.setTagline(trimToNull(tagline));
+		settings.setTaglineEn(trimToNull(taglineEn));
 		settings.setPrimaryColor(sanitizeColor(primaryColor, "#1f2a44"));
 		settings.setAccentColor(sanitizeColor(accentColor, "#e8590c"));
 		settings.setCurrency(currency.matches("[A-Z]{3}") ? currency : "SEK");

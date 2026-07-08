@@ -88,6 +88,7 @@ public class DemoDataSeeder implements ApplicationRunner {
 		StoreSettings s = settingsRepository.findById(1L).orElseThrow();
 		s.setStoreName("Kortbutiken");
 		s.setTagline("Singles, sealed & tillbehör för samlare");
+		s.setTaglineEn("Singles, sealed & accessories for collectors");
 		s.setPrimaryColor("#1f2a44");
 		s.setAccentColor("#e8590c");
 		s.setCurrency("SEK");

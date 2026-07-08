@@ -195,6 +195,18 @@ class SiteWideFixesTests {
 		}
 	}
 
+	// --- localized store tagline (V1 seeds sv, V6 backfills en) ---
+
+	@Test
+	void homeShowsTheTaglineInTheVisitorsLanguage() throws Exception {
+		mvc.perform(get("/?lang=en"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("Singles, sealed &amp; accessories for collectors")));
+		mvc.perform(get("/?lang=sv"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("Singles, sealed &amp; tillbehör för samlare")));
+	}
+
 	// --- localized stock unit on the product page ---
 
 	@Test

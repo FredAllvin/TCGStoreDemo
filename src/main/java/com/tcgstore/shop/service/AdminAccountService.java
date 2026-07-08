@@ -74,7 +74,12 @@ public class AdminAccountService implements ApplicationRunner {
 		}
 	}
 
-	/** Creates or updates the admin account configured via ADMIN_USERNAME / ADMIN_PASSWORD. */
+	/**
+	 * Creates the admin account configured via ADMIN_USERNAME / ADMIN_PASSWORD.
+	 * An existing account's password is left alone (it may have been changed via
+	 * /admin/password and must survive restarts) — except in the demo profile,
+	 * where the nightly reset restores the throwaway demo credentials.
+	 */
 	@Transactional
 	public void ensureConfiguredAdmin() {
 		String username = props.admin().username();
@@ -86,10 +91,23 @@ public class AdminAccountService implements ApplicationRunner {
 			}
 			return;
 		}
-		AdminUser admin = repository.findByUsernameIgnoreCase(username).orElseGet(AdminUser::new);
-		admin.setUsername(username);
-		admin.setPasswordHash(passwordEncoder.encode(password));
-		repository.save(admin);
+		AdminUser existing = repository.findByUsernameIgnoreCase(username).orElse(null);
+		if (existing == null) {
+			AdminUser admin = new AdminUser();
+			admin.setUsername(username);
+			admin.setPasswordHash(passwordEncoder.encode(password));
+			repository.save(admin);
+			return;
+		}
+		if (environment.acceptsProfiles(Profiles.of("demo"))) {
+			existing.setPasswordHash(passwordEncoder.encode(password));
+			repository.save(existing);
+		}
+		else if (!passwordEncoder.matches(password, existing.getPasswordHash())) {
+			log.info("Admin '{}' already exists with a different password than ADMIN_PASSWORD; keeping the stored "
+					+ "one. Change it via /admin/password, or delete the admin_user row to re-bootstrap from .env.",
+					username);
+		}
 	}
 
 	@Transactional

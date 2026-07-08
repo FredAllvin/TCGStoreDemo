@@ -31,7 +31,7 @@
                             <select name="categoryId" class="form-select" required>
                                 <option th:each="c : ${allCategories}" th:value="${c.id}"
                                         th:selected="${product.category != null && product.category.id == c.id}"
-                                        th:text="${c.parent != null ? c.parent.name + ' / ' + c.name : c.name}">Kategori</option>
+                                        th:text="${c.parent != null ? c.parent.nameFor(#locale) + ' / ' + c.nameFor(#locale) : c.nameFor(#locale)}">Kategori</option>
                             </select>
                         </div>
                         <div class="col-md-5">

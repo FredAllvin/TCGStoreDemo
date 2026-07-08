@@ -46,6 +46,7 @@ public class AdminSettingsController {
 			@RequestParam String primaryColor,
 			@RequestParam String accentColor,
 			@RequestParam String currency,
+			@RequestParam(defaultValue = "sv") String defaultLocale,
 			@RequestParam(required = false) String eurDisplayRate,
 			@RequestParam(required = false) String contactEmail,
 			@RequestParam(required = false) String contactPhone,
@@ -62,11 +63,18 @@ public class AdminSettingsController {
 			redirect.addFlashAttribute("flashErrorKey", "admin.settings.nameRequired");
 			return "redirect:/admin/settings";
 		}
+		if (tooLong(storeName, 120) || tooLong(tagline, 200) || tooLong(contactEmail, 200)
+				|| tooLong(contactPhone, 50) || tooLong(addressLine, 300) || tooLong(instagramUrl, 300)
+				|| tooLong(facebookUrl, 300) || tooLong(discordUrl, 300)) {
+			redirect.addFlashAttribute("flashErrorKey", "admin.settings.tooLong");
+			return "redirect:/admin/settings";
+		}
 		settings.setStoreName(storeName.trim());
 		settings.setTagline(trimToNull(tagline));
 		settings.setPrimaryColor(sanitizeColor(primaryColor, "#1f2a44"));
 		settings.setAccentColor(sanitizeColor(accentColor, "#e8590c"));
 		settings.setCurrency(currency.matches("[A-Z]{3}") ? currency : "SEK");
+		settings.setDefaultLocale(defaultLocale.matches("sv|en") ? defaultLocale : "sv");
 		settings.setContactEmail(trimToNull(contactEmail));
 		settings.setContactPhone(trimToNull(contactPhone));
 		settings.setAddressLine(trimToNull(addressLine));
@@ -93,6 +101,7 @@ public class AdminSettingsController {
 			imageService.delete(settings.getLogoPath());
 			settings.setLogoPath(null);
 		}
+		boolean logoRejected = false;
 		if (logo != null && !logo.isEmpty()) {
 			try {
 				String old = settings.getLogoPath();
@@ -100,23 +109,33 @@ public class AdminSettingsController {
 				imageService.delete(old);
 			}
 			catch (InvalidImageException e) {
+				logoRejected = true;
 				redirect.addFlashAttribute("flashErrorKey", "admin.images.invalid");
 			}
 		}
 
 		settingsService.save(settings);
-		redirect.addFlashAttribute("flashSuccessKey", "admin.saved");
+		if (!logoRejected) {
+			redirect.addFlashAttribute("flashSuccessKey", "admin.saved");
+		}
 		return "redirect:/admin/settings";
 	}
 
 	// --- shipping options ---
 
 	@PostMapping("/shipping")
-	public String addShipping(@RequestParam String name, @RequestParam String price,
+	public String addShipping(@RequestParam String name,
+			@RequestParam(required = false) String nameEn,
+			@RequestParam String price,
 			@RequestParam(defaultValue = "0") int sortOrder, RedirectAttributes redirect) {
+		if (tooLong(name, 120) || tooLong(nameEn, 120)) {
+			redirect.addFlashAttribute("flashErrorKey", "admin.settings.tooLong");
+			return "redirect:/admin/settings";
+		}
 		try {
 			ShippingOption option = new ShippingOption();
 			option.setName(name.trim());
+			option.setNameEn(trimToNull(nameEn));
 			option.setPriceMinor(FormatService.parseMinor(price));
 			option.setSortOrder(sortOrder);
 			shippingOptions.save(option);
@@ -147,6 +166,11 @@ public class AdminSettingsController {
 
 	private static String trimToNull(String value) {
 		return value == null || value.isBlank() ? null : value.trim();
+	}
+
+	// Same limits as the form's maxlength attributes and the database columns.
+	private static boolean tooLong(String value, int max) {
+		return value != null && value.length() > max;
 	}
 
 	private static String sanitizeColor(String color, String fallback) {

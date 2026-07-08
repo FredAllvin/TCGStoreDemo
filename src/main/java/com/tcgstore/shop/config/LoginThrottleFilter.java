@@ -30,7 +30,8 @@ public class LoginThrottleFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
-		if (attempts.isBlocked(request.getRemoteAddr())) {
+		if (attempts.isBlocked(request.getRemoteAddr())
+				|| attempts.isUsernameBlocked(request.getParameter("username"))) {
 			response.sendRedirect("/admin/login?locked");
 			return;
 		}

@@ -62,7 +62,7 @@
                     <span th:text="${@fmt.currency(order.subtotalMinor, order.currency)}">30 kr</span>
                 </div>
                 <div class="d-flex justify-content-between small">
-                    <span th:text="#{order.shippingMethod} + ' (' + ${order.shippingName} + ')'">Frakt</span>
+                    <span th:text="#{order.shippingMethod} + ' (' + ${order.shippingNameFor(#locale)} + ')'">Frakt</span>
                     <span th:text="${@fmt.currency(order.shippingMinor, order.currency)}">29 kr</span>
                 </div>
                 <hr class="my-2">

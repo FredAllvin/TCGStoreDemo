@@ -31,6 +31,19 @@ public class OrderService {
 	@Transactional
 	public void markPaid(Order order, String paymentRef) {
 		Order managed = orders.findById(order.getId()).orElseThrow();
+		if (managed.getStatus() == OrderStatus.CANCELLED) {
+			// Payment arrived for an order that was already cancelled and restocked
+			// (e.g. the admin cancelled while the customer sat on the payment page).
+			// Money has been taken but nothing is reserved — keep the payment
+			// reference and flag it for manual refund or restock.
+			if (paymentRef != null) {
+				managed.setPaymentRef(paymentRef);
+				orders.save(managed);
+			}
+			log.error("Payment {} received for CANCELLED order {} — refund or restock manually",
+					paymentRef, managed.getOrderNumber());
+			return;
+		}
 		if (managed.getStatus() != OrderStatus.PENDING) {
 			return;
 		}

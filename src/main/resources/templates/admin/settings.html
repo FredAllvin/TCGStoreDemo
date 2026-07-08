@@ -63,6 +63,13 @@
                             <div class="form-text" th:text="#{admin.settings.currencyHint}">Priser konverteras inte automatiskt.</div>
                         </div>
                         <div class="col-md-4">
+                            <label class="form-label" th:text="#{admin.settings.defaultLocale}">Standardspråk</label>
+                            <select name="defaultLocale" class="form-select">
+                                <option value="sv" th:selected="${settings.defaultLocale != 'en'}" th:text="#{lang.sv}">Svenska</option>
+                                <option value="en" th:selected="${settings.defaultLocale == 'en'}" th:text="#{lang.en}">English</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
                             <label class="form-label" th:text="#{admin.settings.eurRate}">EUR-visningskurs</label>
                             <input type="text" name="eurDisplayRate" class="form-control"
                                    th:value="${settings.eurDisplayRate}" placeholder="0.088">
@@ -82,32 +89,32 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label" th:text="#{checkout.email}">E-post</label>
-                            <input type="email" name="contactEmail" class="form-control"
+                            <input type="email" name="contactEmail" class="form-control" maxlength="200"
                                    th:value="${settings.contactEmail}">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" th:text="#{checkout.phone}">Telefon</label>
-                            <input type="text" name="contactPhone" class="form-control"
+                            <input type="text" name="contactPhone" class="form-control" maxlength="50"
                                    th:value="${settings.contactPhone}">
                         </div>
                         <div class="col-12">
                             <label class="form-label" th:text="#{admin.settings.address}">Adress</label>
-                            <input type="text" name="addressLine" class="form-control"
+                            <input type="text" name="addressLine" class="form-control" maxlength="300"
                                    th:value="${settings.addressLine}">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Instagram</label>
-                            <input type="url" name="instagramUrl" class="form-control"
+                            <input type="url" name="instagramUrl" class="form-control" maxlength="300"
                                    th:value="${settings.instagramUrl}" placeholder="https://…">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Facebook</label>
-                            <input type="url" name="facebookUrl" class="form-control"
+                            <input type="url" name="facebookUrl" class="form-control" maxlength="300"
                                    th:value="${settings.facebookUrl}" placeholder="https://…">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Discord</label>
-                            <input type="url" name="discordUrl" class="form-control"
+                            <input type="url" name="discordUrl" class="form-control" maxlength="300"
                                    th:value="${settings.discordUrl}" placeholder="https://…">
                         </div>
                     </div>
@@ -126,6 +133,7 @@
                         <td>
                             <span th:text="${option.name}"
                                   th:classappend="${!option.active} ? 'text-muted text-decoration-line-through'">PostNord</span>
+                            <div class="small text-muted" th:if="${option.nameEn != null}" th:text="${option.nameEn}">Tracked parcel</div>
                         </td>
                         <td class="text-end" th:text="${@fmt.money(option.priceMinor)}">69 kr</td>
                         <td class="text-end text-nowrap">
@@ -145,8 +153,10 @@
                     </tbody>
                 </table>
                 <form th:action="@{/admin/settings/shipping}" method="post" class="d-flex gap-2">
-                    <input type="text" name="name" class="form-control form-control-sm" required
+                    <input type="text" name="name" class="form-control form-control-sm" required maxlength="120"
                            th:placeholder="#{admin.settings.shippingName}">
+                    <input type="text" name="nameEn" class="form-control form-control-sm" maxlength="120"
+                           th:placeholder="#{admin.settings.shippingNameEn}">
                     <input type="text" name="price" class="form-control form-control-sm" style="width: 90px"
                            required placeholder="69">
                     <button class="btn btn-sm btn-accent text-nowrap" type="submit"

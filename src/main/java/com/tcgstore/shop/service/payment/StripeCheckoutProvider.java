@@ -9,8 +9,12 @@ import com.tcgstore.shop.domain.Order;
 import com.tcgstore.shop.domain.OrderLine;
 import com.tcgstore.shop.repo.OrderRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Locale;
 
 /**
@@ -23,14 +27,24 @@ import java.util.Locale;
 @Component
 public class StripeCheckoutProvider implements PaymentProvider {
 
+	/**
+	 * How long the customer gets to pay. Must stay well below the 60 minutes
+	 * after which {@link com.tcgstore.shop.service.PendingOrderReleaseJob}
+	 * cancels the order and restocks it — otherwise the customer could pay a
+	 * session whose order no longer exists. 30 minutes is Stripe's minimum.
+	 */
+	private static final Duration SESSION_LIFETIME = Duration.ofMinutes(30);
+
 	private final AppProperties props;
 	private final OrderRepository orders;
+	private final MessageSource messages;
 	private final String secretKey;
 
-	public StripeCheckoutProvider(AppProperties props, OrderRepository orders,
+	public StripeCheckoutProvider(AppProperties props, OrderRepository orders, MessageSource messages,
 			@Value("${stripe.secret-key}") String secretKey) {
 		this.props = props;
 		this.orders = orders;
+		this.messages = messages;
 		this.secretKey = secretKey == null ? "" : secretKey.trim();
 		if (!this.secretKey.isBlank()) {
 			Stripe.apiKey = this.secretKey;
@@ -47,13 +61,17 @@ public class StripeCheckoutProvider implements PaymentProvider {
 		if (secretKey.isBlank()) {
 			throw new PaymentException("payments.provider=stripe but STRIPE_SECRET_KEY is not set");
 		}
+		Locale customerLocale = LocaleContextHolder.getLocale();
+		boolean english = "en".equals(customerLocale.getLanguage());
 		String confirmationUrl = props.baseUrl() + "/order/" + order.getOrderNumber() + "?t=" + order.getAccessToken();
 		SessionCreateParams.Builder params = SessionCreateParams.builder()
 				.setMode(SessionCreateParams.Mode.PAYMENT)
 				.setClientReferenceId(order.getOrderNumber())
 				.setCustomerEmail(order.getEmail())
 				.setSuccessUrl(confirmationUrl)
-				.setCancelUrl(confirmationUrl);
+				.setCancelUrl(confirmationUrl)
+				.setExpiresAt(Instant.now().plus(SESSION_LIFETIME).getEpochSecond())
+				.setLocale(english ? SessionCreateParams.Locale.EN : SessionCreateParams.Locale.SV);
 
 		String currency = order.getCurrency().toLowerCase(Locale.ROOT);
 		for (OrderLine line : order.getLines()) {
@@ -78,7 +96,8 @@ public class StripeCheckoutProvider implements PaymentProvider {
 							.setCurrency(currency)
 							.setUnitAmount(order.getShippingMinor())
 							.setProductData(SessionCreateParams.LineItem.PriceData.ProductData.builder()
-									.setName("Frakt – " + order.getShippingName())
+									.setName(messages.getMessage("pay.shippingLabel", null, customerLocale)
+											+ " – " + order.shippingNameFor(customerLocale))
 									.build())
 							.build())
 					.build());

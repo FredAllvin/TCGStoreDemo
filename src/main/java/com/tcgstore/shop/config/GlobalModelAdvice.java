@@ -10,6 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  * Adds the attributes every page needs (branding, nav, cart badge) so
  * individual controllers stay focused on their own data. Scoped to our web
@@ -38,5 +41,21 @@ public class GlobalModelAdvice {
 		model.addAttribute("cartCount", cart.itemCount());
 		model.addAttribute("demoMode", environment.acceptsProfiles(Profiles.of("demo")));
 		model.addAttribute("currentPath", request.getRequestURI());
+		model.addAttribute("currentUrl", currentUrl(request));
+	}
+
+	/**
+	 * The current URI including its query string (minus any lang parameter), so
+	 * the language switcher keeps search terms, filters and order tokens intact.
+	 */
+	private static String currentUrl(HttpServletRequest request) {
+		String query = request.getQueryString();
+		if (query == null || query.isBlank()) {
+			return request.getRequestURI();
+		}
+		String withoutLang = Arrays.stream(query.split("&"))
+				.filter(param -> !param.startsWith("lang="))
+				.collect(Collectors.joining("&"));
+		return withoutLang.isBlank() ? request.getRequestURI() : request.getRequestURI() + "?" + withoutLang;
 	}
 }

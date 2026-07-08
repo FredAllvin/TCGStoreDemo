@@ -85,6 +85,7 @@ public class CheckoutService {
 		order.setCountry(form.getCountry().trim());
 		order.setCustomerNote(blankToNull(form.getNote()));
 		order.setShippingName(shipping.getName());
+		order.setShippingNameEn(shipping.getNameEn());
 		order.setShippingMinor(shippingCost);
 		order.setSubtotalMinor(view.subtotal());
 		order.setTotalMinor(view.subtotal() + shippingCost);

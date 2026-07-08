@@ -18,7 +18,7 @@
             <div class="small text-muted text-truncate" th:if="${product.setName != null}"
                  th:text="${product.setName}">Set</div>
             <div class="fw-semibold product-title" th:text="${product.name}">Kortnamn</div>
-            <div class="mt-auto pt-1 fw-bold">
+            <div class="mt-auto pt-1 fw-bold" th:if="${!product.activeVariants().isEmpty()}">
                 <span th:if="${product.hasPriceRange()}" class="fw-normal small" th:text="#{product.from}">Från</span>
                 <span th:text="${@fmt.money(product.minPriceMinor())}">100 kr</span>
             </div>

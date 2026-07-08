@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
 <head>
-    <title th:text="${category.name} + ' – ' + ${settings.storeName}">Kategori</title>
+    <title th:text="${category.nameFor(#locale)} + ' – ' + ${settings.storeName}">Kategori</title>
 </head>
 <body>
 <main class="container py-4 flex-grow-1">
@@ -10,14 +10,14 @@
         <ol class="breadcrumb small">
             <li class="breadcrumb-item"><a th:href="@{/}" th:text="#{nav.home}">Hem</a></li>
             <li class="breadcrumb-item">
-                <a th:href="@{'/c/' + ${category.parent.slug}}" th:text="${category.parent.name}">Spel</a>
+                <a th:href="@{'/c/' + ${category.parent.slug}}" th:text="${category.parent.nameFor(#locale)}">Spel</a>
             </li>
-            <li class="breadcrumb-item active" th:text="${category.name}">Kategori</li>
+            <li class="breadcrumb-item active" th:text="${category.nameFor(#locale)}">Kategori</li>
         </ol>
     </nav>
 
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <h1 class="h3 mb-0" th:text="${category.parent != null ? category.parent.name + ' – ' + category.name : category.name}">Kategori</h1>
+        <h1 class="h3 mb-0" th:text="${category.parent != null ? category.parent.nameFor(#locale) + ' – ' + category.nameFor(#locale) : category.nameFor(#locale)}">Kategori</h1>
 
         <form method="get" class="d-flex align-items-center gap-3">
             <div class="form-check mb-0">
@@ -35,7 +35,7 @@
 
     <div class="mb-3" th:if="${!category.children.isEmpty()}">
         <a th:each="child : ${category.children}" class="btn btn-sm btn-outline-accent me-2 mb-1"
-           th:href="@{'/c/' + ${child.slug}}" th:text="${child.name}">Singles</a>
+           th:href="@{'/c/' + ${child.slug}}" th:text="${child.nameFor(#locale)}">Singles</a>
     </div>
 
     <div th:if="${products.isEmpty()}" class="text-center text-muted py-5">

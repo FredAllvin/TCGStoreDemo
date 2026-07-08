@@ -10,10 +10,10 @@
         <ol class="breadcrumb small">
             <li class="breadcrumb-item"><a th:href="@{/}" th:text="#{nav.home}">Hem</a></li>
             <li class="breadcrumb-item" th:if="${product.category.parent != null}">
-                <a th:href="@{'/c/' + ${product.category.parent.slug}}" th:text="${product.category.parent.name}">Spel</a>
+                <a th:href="@{'/c/' + ${product.category.parent.slug}}" th:text="${product.category.parent.nameFor(#locale)}">Spel</a>
             </li>
             <li class="breadcrumb-item">
-                <a th:href="@{'/c/' + ${product.category.slug}}" th:text="${product.category.name}">Kategori</a>
+                <a th:href="@{'/c/' + ${product.category.slug}}" th:text="${product.category.nameFor(#locale)}">Kategori</a>
             </li>
             <li class="breadcrumb-item active" th:text="${product.name}">Produkt</li>
         </ol>
@@ -112,7 +112,7 @@
                                 <div class="small text-muted" th:if="${#locale.language == 'en' && @fmt.moneyEur(v.priceMinor) != null}"
                                      th:text="${@fmt.moneyEur(v.priceMinor)}">≈ €4</div>
                             </td>
-                            <td class="small" th:text="${v.inStock() ? v.stockQty + ' st' : '–'}">2 st</td>
+                            <td class="small" th:text="${v.inStock()} ? #{product.pieces(${v.stockQty})} : '–'">2 st</td>
                             <td class="text-end">
                                 <form th:action="@{/cart/add}" method="post" class="d-flex gap-2 justify-content-end">
                                     <input type="hidden" name="variantId" th:value="${v.id}">
@@ -149,7 +149,7 @@
                                 <div class="small text-muted" th:if="${#locale.language == 'en' && @fmt.moneyEur(v.priceMinor) != null}"
                                      th:text="${@fmt.moneyEur(v.priceMinor)}">≈ €166</div>
                             </td>
-                            <td class="small" th:text="${v.inStock() ? v.stockQty + ' st' : '–'}">1 st</td>
+                            <td class="small" th:text="${v.inStock()} ? #{product.pieces(${v.stockQty})} : '–'">1 st</td>
                             <td class="text-end">
                                 <form th:action="@{/cart/add}" method="post">
                                     <input type="hidden" name="variantId" th:value="${v.id}">

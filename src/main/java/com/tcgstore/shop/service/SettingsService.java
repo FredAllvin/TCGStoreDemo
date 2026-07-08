@@ -5,6 +5,8 @@ import com.tcgstore.shop.repo.StoreSettingsRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
+
 /**
  * The settings row is read on every page render, so it is cached in memory
  * and refreshed whenever the admin saves changes.
@@ -37,5 +39,10 @@ public class SettingsService {
 
 	public void refresh() {
 		cached = null;
+	}
+
+	/** The store's configured default locale, used when a visitor has no language cookie. */
+	public Locale defaultLocale() {
+		return "en".equalsIgnoreCase(get().getDefaultLocale()) ? Locale.of("en") : Locale.of("sv", "SE");
 	}
 }

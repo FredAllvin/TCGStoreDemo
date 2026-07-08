@@ -70,7 +70,7 @@
                                th:value="${option.id}" th:id="'ship-' + ${option.id}">
                         <label class="form-check-label d-flex justify-content-between w-100"
                                th:for="'ship-' + ${option.id}">
-                            <span th:text="${option.name}">PostNord</span>
+                            <span th:text="${option.nameFor(#locale)}">PostNord</span>
                             <span class="fw-semibold"
                                   th:text="${shippingCosts[option.id] == 0} ? #{checkout.freeShipping} : ${@fmt.money(shippingCosts[option.id])}">69 kr</span>
                         </label>

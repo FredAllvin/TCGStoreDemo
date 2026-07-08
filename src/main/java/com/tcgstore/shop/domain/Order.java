@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Entity
 @Table(name = "orders")
@@ -42,6 +43,7 @@ public class Order {
 	private String customerNote;
 
 	private String shippingName;
+	private String shippingNameEn;
 	private long shippingMinor;
 	private long subtotalMinor;
 	private long totalMinor;
@@ -66,6 +68,14 @@ public class Order {
 
 	public int itemCount() {
 		return lines.stream().mapToInt(OrderLine::getQty).sum();
+	}
+
+	/** The shipping name snapshot for the given locale, falling back to the other language. */
+	public String shippingNameFor(Locale locale) {
+		boolean english = locale != null && "en".equals(locale.getLanguage());
+		String preferred = english ? shippingNameEn : shippingName;
+		String other = english ? shippingName : shippingNameEn;
+		return preferred == null || preferred.isBlank() ? other : preferred;
 	}
 
 	public Long getId() {
@@ -178,6 +188,14 @@ public class Order {
 
 	public void setShippingName(String shippingName) {
 		this.shippingName = shippingName;
+	}
+
+	public String getShippingNameEn() {
+		return shippingNameEn;
+	}
+
+	public void setShippingNameEn(String shippingNameEn) {
+		this.shippingNameEn = shippingNameEn;
 	}
 
 	public long getShippingMinor() {

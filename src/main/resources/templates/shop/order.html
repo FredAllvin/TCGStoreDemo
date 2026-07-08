@@ -49,7 +49,7 @@
         <div class="d-flex justify-content-between small">
             <span>
                 <span th:text="#{order.shippingMethod}">Frakt</span>
-                <span class="text-muted" th:text="'(' + ${order.shippingName} + ')'">(PostNord)</span>
+                <span class="text-muted" th:text="'(' + ${order.shippingNameFor(#locale)} + ')'">(PostNord)</span>
             </span>
             <span th:text="${order.shippingMinor == 0} ? #{checkout.freeShipping} : ${@fmt.currency(order.shippingMinor, order.currency)}">69 kr</span>
         </div>

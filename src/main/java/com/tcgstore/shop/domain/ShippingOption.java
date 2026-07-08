@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.util.Locale;
+
 @Entity
 public class ShippingOption {
 
@@ -13,9 +15,18 @@ public class ShippingOption {
 	private Long id;
 
 	private String name;
+	private String nameEn;
 	private long priceMinor;
 	private int sortOrder;
 	private boolean active = true;
+
+	/** The name for the given locale, falling back to the other language. */
+	public String nameFor(Locale locale) {
+		boolean english = locale != null && "en".equals(locale.getLanguage());
+		String preferred = english ? nameEn : name;
+		String other = english ? name : nameEn;
+		return preferred == null || preferred.isBlank() ? other : preferred;
+	}
 
 	public Long getId() {
 		return id;
@@ -31,6 +42,14 @@ public class ShippingOption {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getNameEn() {
+		return nameEn;
+	}
+
+	public void setNameEn(String nameEn) {
+		this.nameEn = nameEn;
 	}
 
 	public long getPriceMinor() {

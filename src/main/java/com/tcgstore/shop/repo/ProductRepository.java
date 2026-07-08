@@ -33,15 +33,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 			""")
 	Page<Product> findInStockByCategoryIdIn(@Param("categoryIds") Collection<Long> categoryIds, Pageable pageable);
 
+	/** @param pattern the LIKE pattern with wildcards escaped, see CatalogService.likePattern */
 	@Query("""
 			select p from Product p
 			where p.active = true and (
-			      lower(p.name) like lower(concat('%', :q, '%'))
-			   or lower(p.setName) like lower(concat('%', :q, '%'))
-			   or lower(p.tags) like lower(concat('%', :q, '%'))
+			      lower(p.name) like lower(:pattern) escape '!'
+			   or lower(p.setName) like lower(:pattern) escape '!'
+			   or lower(p.tags) like lower(:pattern) escape '!'
 			   or lower(p.cardNumber) = lower(:q))
 			""")
-	Page<Product> search(@Param("q") String q, Pageable pageable);
+	Page<Product> search(@Param("q") String q, @Param("pattern") String pattern, Pageable pageable);
 
 	// admin listing
 	Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);

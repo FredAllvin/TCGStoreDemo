@@ -12,6 +12,9 @@ import java.time.Duration;
 public class PendingOrderReleaseJob {
 
 	private static final Logger log = LoggerFactory.getLogger(PendingOrderReleaseJob.class);
+
+	// Must stay well above StripeCheckoutProvider.SESSION_LIFETIME (30 min):
+	// the payment session has to be dead before we cancel and restock.
 	private static final Duration MAX_PENDING_AGE = Duration.ofMinutes(60);
 
 	private final OrderService orderService;

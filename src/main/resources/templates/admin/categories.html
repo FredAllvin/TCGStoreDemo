@@ -15,7 +15,10 @@
                         <form th:action="@{'/admin/categories/' + ${root.id}}" method="post"
                               class="d-flex align-items-center gap-2 flex-grow-1">
                             <input type="text" name="name" class="form-control form-control-sm fw-semibold"
-                                   th:value="${root.name}" style="max-width: 240px;">
+                                   th:value="${root.name}" maxlength="120" style="max-width: 240px;">
+                            <input type="text" name="nameEn" class="form-control form-control-sm"
+                                   th:value="${root.nameEn}" maxlength="120" style="max-width: 200px;"
+                                   th:placeholder="#{admin.categories.nameEn}">
                             <input type="number" name="sortOrder" class="form-control form-control-sm"
                                    th:value="${root.sortOrder}" style="width: 70px;" title="Sortering">
                             <button class="btn btn-sm btn-outline-secondary" type="submit"
@@ -33,7 +36,10 @@
                         <form th:action="@{'/admin/categories/' + ${child.id}}" method="post"
                               class="d-flex align-items-center gap-2 flex-grow-1">
                             <input type="text" name="name" class="form-control form-control-sm"
-                                   th:value="${child.name}" style="max-width: 220px;">
+                                   th:value="${child.name}" maxlength="120" style="max-width: 220px;">
+                            <input type="text" name="nameEn" class="form-control form-control-sm"
+                                   th:value="${child.nameEn}" maxlength="120" style="max-width: 180px;"
+                                   th:placeholder="#{admin.categories.nameEn}">
                             <input type="number" name="sortOrder" class="form-control form-control-sm"
                                    th:value="${child.sortOrder}" style="width: 70px;">
                             <button class="btn btn-sm btn-outline-secondary" type="submit"
@@ -55,12 +61,14 @@
             <div class="card border-0 shadow-sm p-3">
                 <h2 class="h6 text-uppercase text-muted" th:text="#{admin.categories.add}">Lägg till kategori</h2>
                 <form th:action="@{/admin/categories}" method="post" class="d-flex flex-column gap-2">
-                    <input type="text" name="name" class="form-control" required
+                    <input type="text" name="name" class="form-control" required maxlength="120"
                            th:placeholder="#{admin.products.name}">
+                    <input type="text" name="nameEn" class="form-control" maxlength="120"
+                           th:placeholder="#{admin.categories.nameEn}">
                     <select name="parentId" class="form-select">
                         <option value="" th:text="#{admin.categories.topLevel}">— Toppnivå —</option>
                         <option th:each="root : ${rootCategories}" th:value="${root.id}"
-                                th:text="${root.name}">Pokémon</option>
+                                th:text="${root.nameFor(#locale)}">Pokémon</option>
                     </select>
                     <input type="number" name="sortOrder" class="form-control" value="0"
                            th:title="#{admin.categories.sort}">

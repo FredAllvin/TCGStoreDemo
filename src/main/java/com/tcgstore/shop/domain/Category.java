@@ -12,6 +12,7 @@ import jakarta.persistence.OrderBy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /** One level of nesting: a game (Pokémon) with children (Singles, Sealed), or a standalone category. */
 @Entity
@@ -30,11 +31,20 @@ public class Category {
 	private List<Category> children = new ArrayList<>();
 
 	private String name;
+	private String nameEn;
 	private String slug;
 	private int sortOrder;
 
 	public boolean isRoot() {
 		return parent == null;
+	}
+
+	/** The name for the given locale, falling back to the other language. */
+	public String nameFor(Locale locale) {
+		boolean english = locale != null && "en".equals(locale.getLanguage());
+		String preferred = english ? nameEn : name;
+		String other = english ? name : nameEn;
+		return preferred == null || preferred.isBlank() ? other : preferred;
 	}
 
 	public Long getId() {
@@ -63,6 +73,14 @@ public class Category {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getNameEn() {
+		return nameEn;
+	}
+
+	public void setNameEn(String nameEn) {
+		this.nameEn = nameEn;
 	}
 
 	public String getSlug() {

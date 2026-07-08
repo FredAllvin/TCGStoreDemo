@@ -52,6 +52,12 @@ public class CatalogService {
 	}
 
 	public Page<Product> search(String query, Pageable pageable) {
-		return productRepository.search(query.trim(), pageable);
+		String q = query.trim();
+		return productRepository.search(q, likePattern(q), pageable);
+	}
+
+	/** Escapes LIKE wildcards so a search for "100%" or "_" matches literally. */
+	static String likePattern(String q) {
+		return "%" + q.replace("!", "!!").replace("%", "!%").replace("_", "!_") + "%";
 	}
 }

@@ -119,9 +119,10 @@ public class AdminCatalogService {
 	// --- categories ---
 
 	@Transactional
-	public void createCategory(String name, Long parentId, int sortOrder) {
+	public void createCategory(String name, String nameEn, Long parentId, int sortOrder) {
 		Category category = new Category();
 		category.setName(name.trim());
+		category.setNameEn(trimToNull(nameEn));
 		category.setSortOrder(sortOrder);
 		if (parentId != null) {
 			category.setParent(categories.findById(parentId).orElse(null));
@@ -138,9 +139,10 @@ public class AdminCatalogService {
 	}
 
 	@Transactional
-	public void updateCategory(Long id, String name, int sortOrder) {
+	public void updateCategory(Long id, String name, String nameEn, int sortOrder) {
 		Category category = categories.findById(id).orElseThrow();
 		category.setName(name.trim());
+		category.setNameEn(trimToNull(nameEn));
 		category.setSortOrder(sortOrder);
 		categories.save(category);
 	}
@@ -154,5 +156,9 @@ public class AdminCatalogService {
 		}
 		categories.delete(category);
 		return true;
+	}
+
+	private static String trimToNull(String value) {
+		return value == null || value.isBlank() ? null : value.trim();
 	}
 }

@@ -13,6 +13,8 @@ import com.tcgstore.shop.web.dto.CheckoutForm;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,13 +36,15 @@ public class CheckoutController {
 	private final CheckoutService checkoutService;
 	private final ShippingOptionRepository shippingOptions;
 	private final PaymentService paymentService;
+	private final MessageSource messages;
 
 	public CheckoutController(CartService cartService, CheckoutService checkoutService,
-			ShippingOptionRepository shippingOptions, PaymentService paymentService) {
+			ShippingOptionRepository shippingOptions, PaymentService paymentService, MessageSource messages) {
 		this.cartService = cartService;
 		this.checkoutService = checkoutService;
 		this.shippingOptions = shippingOptions;
 		this.paymentService = paymentService;
+		this.messages = messages;
 	}
 
 	@GetMapping("/checkout")
@@ -50,7 +54,9 @@ public class CheckoutController {
 			return "redirect:/cart";
 		}
 		if (!model.containsAttribute("form")) {
-			model.addAttribute("form", new CheckoutForm());
+			CheckoutForm form = new CheckoutForm();
+			form.setCountry(messages.getMessage("checkout.countryDefault", null, LocaleContextHolder.getLocale()));
+			model.addAttribute("form", form);
 		}
 		addCheckoutModel(model, cart);
 		return "shop/checkout";

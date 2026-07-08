@@ -54,9 +54,14 @@ public class CatalogController {
 		if (q == null || q.trim().length() < 2) {
 			return "redirect:/";
 		}
-		Page<Product> products = catalog.search(q,
+		// mirror the search box's maxlength for requests that bypass the form
+		String query = q.trim();
+		if (query.length() > 100) {
+			query = query.substring(0, 100);
+		}
+		Page<Product> products = catalog.search(query,
 				PageRequest.of(Math.max(0, page), PAGE_SIZE, Sort.by("createdAt").descending()));
-		model.addAttribute("q", q.trim());
+		model.addAttribute("q", query);
 		model.addAttribute("products", products);
 		return "shop/search";
 	}

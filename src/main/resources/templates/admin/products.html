@@ -41,7 +41,7 @@
                         <div class="small text-muted" th:if="${p.setName != null}" th:text="${p.setName}">Set</div>
                     </td>
                     <td class="small"
-                        th:text="${p.category.parent != null ? p.category.parent.name + ' / ' + p.category.name : p.category.name}">Kategori</td>
+                        th:text="${p.category.parent != null ? p.category.parent.nameFor(#locale) + ' / ' + p.category.nameFor(#locale) : p.category.nameFor(#locale)}">Kategori</td>
                     <td class="small" th:text="${p.variants.size()}">3</td>
                     <td class="small" th:text="${@fmt.money(p.minPriceMinor())}">45 kr</td>
                     <td>

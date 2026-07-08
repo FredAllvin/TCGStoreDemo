@@ -31,14 +31,18 @@ public class AdminCategoryController {
 
 	@PostMapping
 	public String create(@RequestParam String name,
+			@RequestParam(required = false) String nameEn,
 			@RequestParam(required = false) Long parentId,
 			@RequestParam(defaultValue = "0") int sortOrder,
 			RedirectAttributes redirect) {
 		if (name == null || name.isBlank()) {
 			redirect.addFlashAttribute("flashErrorKey", "admin.categories.nameRequired");
 		}
+		else if (tooLong(name) || tooLong(nameEn)) {
+			redirect.addFlashAttribute("flashErrorKey", "admin.categories.tooLong");
+		}
 		else {
-			catalog.createCategory(name, parentId, sortOrder);
+			catalog.createCategory(name, nameEn, parentId, sortOrder);
 			redirect.addFlashAttribute("flashSuccessKey", "admin.saved");
 		}
 		return "redirect:/admin/categories";
@@ -46,12 +50,21 @@ public class AdminCategoryController {
 
 	@PostMapping("/{id}")
 	public String update(@PathVariable Long id, @RequestParam String name,
+			@RequestParam(required = false) String nameEn,
 			@RequestParam(defaultValue = "0") int sortOrder, RedirectAttributes redirect) {
-		if (name != null && !name.isBlank()) {
-			catalog.updateCategory(id, name, sortOrder);
+		if (tooLong(name) || tooLong(nameEn)) {
+			redirect.addFlashAttribute("flashErrorKey", "admin.categories.tooLong");
+		}
+		else if (name != null && !name.isBlank()) {
+			catalog.updateCategory(id, name, nameEn, sortOrder);
 			redirect.addFlashAttribute("flashSuccessKey", "admin.saved");
 		}
 		return "redirect:/admin/categories";
+	}
+
+	// Same limit as the form's maxlength attributes and the database columns.
+	private static boolean tooLong(String value) {
+		return value != null && value.length() > 120;
 	}
 
 	@PostMapping("/{id}/delete")

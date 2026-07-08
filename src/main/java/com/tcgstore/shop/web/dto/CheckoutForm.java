@@ -36,7 +36,7 @@ public class CheckoutForm {
 
 	@NotBlank
 	@Size(max = 80)
-	private String country = "Sverige";
+	private String country;
 
 	@Size(max = 1000)
 	private String note;

@@ -106,14 +106,15 @@ public class DemoDataSeeder implements ApplicationRunner {
 		if (shippingOptions.count() > 0) {
 			return;
 		}
-		ship("Postbrev (ej spårbart)", 2_900, 0);
-		ship("PostNord spårbart paket", 6_900, 1);
-		ship("Hämta i butik", 0, 2);
+		ship("Postbrev (ej spårbart)", "Letter (no tracking)", 2_900, 0);
+		ship("PostNord spårbart paket", "PostNord tracked parcel", 6_900, 1);
+		ship("Hämta i butik", "Pick up in store", 0, 2);
 	}
 
-	private void ship(String name, long priceMinor, int sort) {
+	private void ship(String name, String nameEn, long priceMinor, int sort) {
 		ShippingOption option = new ShippingOption();
 		option.setName(name);
+		option.setNameEn(nameEn);
 		option.setPriceMinor(priceMinor);
 		option.setSortOrder(sort);
 		shippingOptions.save(option);
@@ -132,7 +133,7 @@ public class DemoDataSeeder implements ApplicationRunner {
 		Category onePiece = cat("One Piece", null, 3);
 		Category onePieceSingles = cat("Singles", onePiece, 0);
 		Category onePieceSealed = cat("Sealed", onePiece, 1);
-		Category accessories = cat("Tillbehör", null, 4);
+		Category accessories = cat("Tillbehör", "Accessories", null, 4);
 
 		// --- Pokémon singles ---
 		Product p = single(pokemonSingles, "Pikachu ex", "Surging Sparks", "057/191", "Double Rare", "EN",
@@ -301,8 +302,13 @@ public class DemoDataSeeder implements ApplicationRunner {
 	// --- helpers ---
 
 	private Category cat(String name, Category parent, int sort) {
+		return cat(name, null, parent, sort);
+	}
+
+	private Category cat(String name, String nameEn, Category parent, int sort) {
 		Category category = new Category();
 		category.setName(name);
+		category.setNameEn(nameEn);
 		category.setParent(parent);
 		category.setSortOrder(sort);
 		String slug = parent == null ? Slugs.slugify(name) : Slugs.slugify(parent.getName() + "-" + name);
